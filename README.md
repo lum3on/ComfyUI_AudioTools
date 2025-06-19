@@ -4,14 +4,8 @@ Welcome to the ComfyUI Audio Toolkit, a comprehensive custom node pack for [Comf
 
 This toolkit is designed for a wide range of audio tasks, from podcast enhancement and text-to-speech to creative music manipulation and AI-powered transcription.
 
-## Core Concept: The `AUDIO` Data Type
-
-All nodes in this toolkit are designed to be chainable. They use a custom `AUDIO` data type that bundles the audio waveform (as a tensor) and its sample rate. This ensures seamless compatibility and allows you to build complex processing chains by simply connecting one node to the next.
-
 ## Features
 
--   **I/O**: Load, Preview, and Save common audio formats (WAV, MP3, FLAC).
--   **Audio Generation**: Synthesize speech from text using your system's installed voices.
 -   **Essential Processing**: Normalize, Amplify, Mix, Trim silence, Compress, and apply professional EQ.
 -   **Creative Effects**: Add Reverb, Delay/Echo, and perform Pitch Shifting or Time Stretching.
 -   **AI-Powered Tools**:
@@ -19,6 +13,7 @@ All nodes in this toolkit are designed to be chainable. They use a custom `AUDIO
     -   **Voice Enhancement**: Isolate vocals to remove background noise from speech recordings.
     -   **Transcription**: Transcribe audio to text with state-of-the-art accuracy using OpenAI's Whisper.
 -   **Visualization & Analysis**: Generate waveform images, compare two audio signals visually, and inspect detailed technical information.
+-   **Audio Generation**: Synthesize speech from text using your system's installed voices.
 
 ## Installation
 
@@ -63,14 +58,6 @@ This workflow demonstrates how to isolate the vocals from a song.
 
 ## Node Reference
 
-### I/O Nodes
--   **Load Audio**: Loads an audio file (WAV, MP3, etc.) from your ComfyUI `input` directory. Supports file uploads.
--   **Save Audio**: Saves the processed audio to your `output` directory in `wav`, `mp3`, or `flac` format.
--   **Preview Audio**: Creates an interactive audio player in the UI to listen to the audio at any step.
-
-### Generation Nodes
--   **Text to Speech**: Converts a string of text into spoken audio using your system's available TTS voices.
-
 ### Processing Nodes
 -   **Amplify / Gain**: Adjusts the volume with a specific dB gain.
 -   **Normalize Audio**: Normalizes the audio to a target peak dB level.
@@ -95,6 +82,9 @@ This workflow demonstrates how to isolate the vocals from a song.
 -   **Display Waveform**: Generates a PNG image of the audio's waveform.
 -   **Compare Waveforms**: Creates an overlay image of two different audio waveforms for comparison.
 -   **Show Audio Info**: Displays technical details (sample rate, duration, channels, etc.) about the audio signal in a text box.
+
+### Generation Nodes
+-   **Text to Speech**: Converts a string of text into spoken audio using your system's available TTS voices.
 
 ## Dependencies
 
