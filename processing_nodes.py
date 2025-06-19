@@ -695,15 +695,20 @@ class FadeIn:
 
     def fade(self, audio: dict, duration_seconds: float):
         w, sr = audio["waveform"][0], audio["sample_rate"]
-        num_channels, total_samples = w.shape
         
+        # --- THE FIX: Clone the tensor to create a new, safe copy ---
+        w_copy = w.clone()
+        
+        num_channels, total_samples = w_copy.shape
         fade_samples = min(int(duration_seconds * sr), total_samples)
         
         if fade_samples > 0:
-            fade_curve = torch.linspace(0.0, 1.0, fade_samples, device=w.device).unsqueeze(0)
-            w[:, :fade_samples] *= fade_curve
+            fade_curve = torch.linspace(0.0, 1.0, fade_samples, device=w_copy.device).unsqueeze(0)
             
-        return ({"waveform": w.unsqueeze(0), "sample_rate": sr},)
+            # Apply the fade to the copy, not the original
+            w_copy[:, :fade_samples] *= fade_curve
+            
+        return ({"waveform": w_copy.unsqueeze(0), "sample_rate": sr},)
 
 class FadeOut:
     @classmethod
@@ -720,15 +725,20 @@ class FadeOut:
 
     def fade(self, audio: dict, duration_seconds: float):
         w, sr = audio["waveform"][0], audio["sample_rate"]
-        num_channels, total_samples = w.shape
         
+        # --- THE FIX: Clone the tensor to create a new, safe copy ---
+        w_copy = w.clone()
+
+        num_channels, total_samples = w_copy.shape
         fade_samples = min(int(duration_seconds * sr), total_samples)
         
         if fade_samples > 0:
-            fade_curve = torch.linspace(1.0, 0.0, fade_samples, device=w.device).unsqueeze(0)
-            w[:, -fade_samples:] *= fade_curve
+            fade_curve = torch.linspace(1.0, 0.0, fade_samples, device=w_copy.device).unsqueeze(0)
 
-        return ({"waveform": w.unsqueeze(0), "sample_rate": sr},)
+            # Apply the fade to the copy, not the original
+            w_copy[:, -fade_samples:] *= fade_curve
+
+        return ({"waveform": w_copy.unsqueeze(0), "sample_rate": sr},)
 
 class PadAudio:
     @classmethod
