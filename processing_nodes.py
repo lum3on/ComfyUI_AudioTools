@@ -6,6 +6,10 @@ import torchaudio.functional as F
 import torchaudio.transforms as T
 import math
 
+import numpy as np
+import librosa
+import pyloudnorm as pyln
+
 # --- helper ---
 
 def _manual_reverb(waveform, sample_rate, room_size, damping, wet_level, dry_level):
@@ -443,3 +447,232 @@ class PitchTime:
         if pitch_semitones != 0:
             w = F.pitch_shift(w, sample_rate, n_steps=pitch_semitones)
         return ({"waveform": w.clamp(-1.0, 1.0).unsqueeze(0), "sample_rate": sample_rate},)
+    
+# ----------------- UTILITY NODES -----------------
+
+class ConcatenateAudio:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "audio_a": ("AUDIO",),
+                "audio_b": ("AUDIO",),
+            }
+        }
+    RETURN_TYPES = ("AUDIO",)
+    FUNCTION = "concat"
+    CATEGORY = "L3/AudioTools/Utility"
+
+    def concat(self, audio_a: dict, audio_b: dict):
+        w_a, sr_a = audio_a["waveform"][0], audio_a["sample_rate"]
+        w_b, sr_b = audio_b["waveform"][0], audio_b["sample_rate"]
+
+        # Resample if necessary
+        if sr_a != sr_b:
+            resampler = T.Resample(orig_freq=sr_b, new_freq=sr_a)
+            w_b = resampler(w_b)
+        
+        # Concatenate along the time axis (dim=1)
+        concatenated_w = torch.cat((w_a, w_b), dim=1)
+        return ({"waveform": concatenated_w.unsqueeze(0), "sample_rate": sr_a},)
+
+class StereoPanner:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "audio": ("AUDIO",),
+                "pan": ("FLOAT", {"default": 0.0, "min": -1.0, "max": 1.0, "step": 0.01, "tooltip": "-1.0 is Left, 0.0 is Center, 1.0 is Right"}),
+            }
+        }
+    RETURN_TYPES = ("AUDIO",)
+    FUNCTION = "pan"
+    CATEGORY = "L3/AudioTools/Utility"
+
+    def pan(self, audio: dict, pan: float):
+        w, sr = audio["waveform"][0], audio["sample_rate"]
+        
+        # If mono, convert to stereo first
+        if w.shape[0] == 1:
+            w = torch.cat((w, w), dim=0)
+            
+        # Constant Power Panning Law
+        pan_rad = (pan * 0.5 + 0.5) * (math.pi / 2) # Map -1..1 to 0..pi/2
+        gain_l = torch.cos(torch.tensor(pan_rad))
+        gain_r = torch.sin(torch.tensor(pan_rad))
+
+        panned_w = torch.stack([w[0] * gain_l, w[1] * gain_r])
+        return ({"waveform": panned_w.unsqueeze(0), "sample_rate": sr},)
+
+# ----------------- DYNAMICS & REPAIR NODES -----------------
+
+class DeHum:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "audio": ("AUDIO",),
+                "hum_freq": (["60Hz (America)", "50Hz (Europe/Asia)"],),
+                "reduction_db": ("FLOAT", {"default": -30.0, "min": -60.0, "max": 0.0, "step": 1.0}),
+                "q_factor": ("FLOAT", {"default": 10.0, "min": 1.0, "max": 50.0, "step": 0.5, "tooltip": "Narrowness of the filter. Higher is more surgical."}),
+            }
+        }
+    RETURN_TYPES = ("AUDIO",)
+    FUNCTION = "dehum"
+    CATEGORY = "L3/AudioTools/Processing"
+    
+    def dehum(self, audio: dict, hum_freq: str, reduction_db: float, q_factor: float):
+        w, sr = audio["waveform"][0], audio["sample_rate"]
+        freq = 60 if "60Hz" in hum_freq else 50
+        
+        # Apply a notch filter at the fundamental frequency
+        b0, b1, b2, a0, a1, a2 = _calculate_peaking_coeffs(reduction_db, q_factor, freq, sr)
+        w = F.biquad(w, b0=b0, b1=b1, b2=b2, a0=a0, a1=a1, a2=a2)
+        
+        # Apply a second notch at the first harmonic
+        b0, b1, b2, a0, a1, a2 = _calculate_peaking_coeffs(reduction_db, q_factor, freq * 2, sr)
+        w = F.biquad(w, b0=b0, b1=b1, b2=b2, a0=a0, a1=a1, a2=a2)
+        
+        return ({"waveform": w.unsqueeze(0), "sample_rate": sr},)
+
+class NoiseGate:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "audio": ("AUDIO",),
+                "threshold_db": ("FLOAT", {"default": -40.0, "min": -90.0, "max": 0.0, "step": 1.0}),
+                "attack_ms": ("FLOAT", {"default": 10.0, "min": 1.0, "max": 100.0, "step": 1.0}),
+                "release_ms": ("FLOAT", {"default": 100.0, "min": 10.0, "max": 1000.0, "step": 1.0}),
+            }
+        }
+    RETURN_TYPES = ("AUDIO",)
+    FUNCTION = "gate"
+    CATEGORY = "L3/AudioTools/Processing"
+
+    def gate(self, audio: dict, threshold_db, attack_ms, release_ms):
+        w, sr = audio["waveform"][0], audio["sample_rate"]
+        
+        # Using a simplified version of the manual compressor logic for the gate
+        attack_coeff = torch.tensor(math.exp(-1.0 / (sr * (attack_ms / 1000.0))), device=w.device)
+        release_coeff = torch.tensor(math.exp(-1.0 / (sr * (release_ms / 1000.0))), device=w.device)
+        threshold_lin = 10**(threshold_db / 20.0)
+        
+        envelope = torch.zeros(w.shape[0], device=w.device)
+        gated_w = torch.zeros_like(w)
+
+        for i in range(w.shape[1]):
+            input_peak = torch.abs(w[:, i])
+            use_attack = input_peak > envelope
+            envelope = torch.where(use_attack,
+                                   attack_coeff * envelope + (1 - attack_coeff) * input_peak,
+                                   release_coeff * envelope + (1 - release_coeff) * input_peak)
+            
+            is_open = envelope > threshold_lin
+            gated_w[:, i] = torch.where(is_open, w[:, i], 0.0)
+            
+        return ({"waveform": gated_w.unsqueeze(0), "sample_rate": sr},)
+
+# ----------------- ANALYSIS & REACTIVE NODES -----------------
+
+class LoudnessMeter:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"audio": ("AUDIO",)}}
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("loudness_info",)
+    FUNCTION = "measure"
+    CATEGORY = "L3/AudioTools/Analysis"
+
+    def measure(self, audio: dict):
+        w, sr = audio["waveform"][0], audio["sample_rate"]
+        
+        # pyloudnorm requires numpy array with shape (samples, channels)
+        audio_np = w.cpu().numpy().T
+        
+        meter = pyln.Meter(sr)
+        loudness = meter.integrated_loudness(audio_np)
+        
+        text = f"Integrated Loudness: {loudness:.2f} LUFS"
+        print(f"ComfyAudio: {text}")
+        return {"ui": {"text": [text]}, "result": (text,)}
+
+class BPMDetector:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "audio": ("AUDIO",),
+                "fps": ("INT", {"default": 24, "min": 1, "max": 120}),
+            }
+        }
+    RETURN_TYPES = ("STRING", "FLOAT")
+    RETURN_NAMES = ("bpm_info", "beat_events")
+    FUNCTION = "detect"
+    CATEGORY = "L3/AudioTools/Analysis"
+
+    def detect(self, audio: dict, fps: int):
+        w, sr = audio["waveform"][0], audio["sample_rate"]
+        audio_mono = torch.mean(w, dim=0).cpu().numpy()
+        
+        tempo, beat_frames = librosa.beat.beat_track(y=audio_mono, sr=sr)
+        beat_times = librosa.frames_to_time(beat_frames, sr=sr)
+        
+        duration_sec = len(audio_mono) / sr
+        total_video_frames = int(duration_sec * fps)
+        
+        beat_events = np.zeros(total_video_frames, dtype=np.float32)
+        for t in beat_times:
+            frame_idx = int(t * fps)
+            if frame_idx < total_video_frames:
+                beat_events[frame_idx] = 1.0
+        
+        bpm_info = f"Estimated BPM: {tempo:.2f}"
+        
+        # ComfyUI handles list-to-batch conversion for primitive types
+        return (bpm_info, beat_events.tolist())
+
+class AudioReactiveParameter:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "audio": ("AUDIO",),
+                "fps": ("INT", {"default": 24, "min": 1, "max": 120}),
+                "smoothing": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "Smooths the output. 0=no smoothing, 1=max smoothing."}),
+            }
+        }
+    RETURN_TYPES = ("FLOAT",)
+    RETURN_NAMES = ("envelope",)
+    FUNCTION = "analyze"
+    CATEGORY = "L3/AudioTools/Analysis"
+
+    def analyze(self, audio: dict, fps: int, smoothing: float):
+        w, sr = audio["waveform"][0], audio["sample_rate"]
+        audio_mono = torch.mean(w, dim=0).cpu().numpy()
+        
+        # Get RMS energy envelope from librosa
+        rms = librosa.feature.rms(y=audio_mono)[0]
+        
+        # Resample the RMS envelope to match the number of video frames
+        duration_sec = len(audio_mono) / sr
+        total_video_frames = int(duration_sec * fps)
+        
+        # Create time axes for original RMS and target video frames
+        rms_times = librosa.times_like(rms, sr=sr)
+        video_times = np.linspace(0, duration_sec, total_video_frames)
+        
+        # Interpolate to match video frame rate
+        envelope = np.interp(video_times, rms_times, rms)
+        
+        # Normalize to 0-1 range
+        if np.max(envelope) > 0:
+            envelope /= np.max(envelope)
+        
+        # Apply smoothing (exponential moving average)
+        if smoothing > 0:
+            alpha = 1.0 - smoothing
+            for i in range(1, len(envelope)):
+                envelope[i] = alpha * envelope[i] + (1 - alpha) * envelope[i-1]
+
+        return (envelope.tolist(),)

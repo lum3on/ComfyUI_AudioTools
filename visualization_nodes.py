@@ -1,5 +1,3 @@
-# File: visualization_nodes.py (Final Corrected Version)
-
 import torch
 import torchaudio
 import numpy as np
@@ -15,7 +13,7 @@ class DisplayWaveform:
     
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "generate_waveform_image"
-    CATEGORY = "L3/AudioTools/Visualization"
+    CATEGORY = "L3/AudioTools/Analysis"
 
     def generate_waveform_image(self, audio, width, height, line_color, bg_color, show_axis):
         waveform, sample_rate = None, None
@@ -75,7 +73,7 @@ class CompareWaveforms:
     
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "generate_comparison_image"
-    CATEGORY = "L3/AudioTools/Visualization"
+    CATEGORY = "L3/AudioTools/Analysis"
     
     def _load_and_prep_audio(self, audio_input):
         waveform, sample_rate = None, None
@@ -146,7 +144,7 @@ class ShowAudioInfo:
     RETURN_NAMES = ("info",)
     FUNCTION = "show_info"
     OUTPUT_NODE = True
-    CATEGORY = "L3/AudioTools/Visualization"
+    CATEGORY = "L3/AudioTools/Analysis"
 
     def show_info(self, audio: dict):
         waveform = audio.get("waveform")
