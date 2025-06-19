@@ -28,7 +28,7 @@ All nodes in this toolkit are designed to be chainable. They use a custom `AUDIO
     ```
 2.  Clone this repository:
     ```bash
-    git clone https://github.com/YourUsername/njlent-comfyui_audiotools.git
+    git clone https://github.com/nlent/ComfyUI_AudioTools.git
     ```
     *(Replace with the actual repository URL)*
 3.  Install the required dependencies from within the new directory:
