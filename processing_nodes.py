@@ -203,7 +203,7 @@ class MixAudio:
         return { "required": { "audio_1": ("AUDIO",), "audio_2": ("AUDIO",), "gain_1_db": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 6.0, "step": 0.1}), "gain_2_db": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 6.0, "step": 0.1}), } }
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "mix"
-    CATEGORY = "L3/AudioTools/Processing"
+    CATEGORY = "L3/AudioTools/Utility"
     def mix(self, audio_1: dict, audio_2: dict, gain_1_db: float, gain_2_db: float):
         w1, sr1 = audio_1["waveform"][0], audio_1["sample_rate"]
         w2, sr2 = audio_2["waveform"][0], audio_2["sample_rate"]
@@ -227,7 +227,7 @@ class TrimAudio:
         }
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "trim"
-    CATEGORY = "L3/AudioTools/Processing"
+    CATEGORY = "L3/AudioTools/Utility"
     
     def trim(self, audio: dict, trim_start_seconds: float, trim_end_seconds: float):
         w, sample_rate = audio["waveform"][0], audio["sample_rate"]
@@ -613,7 +613,8 @@ class BPMDetector:
 
     def detect(self, audio: dict, fps: int):
         w, sr = audio["waveform"][0], audio["sample_rate"]
-        audio_mono = torch.mean(w, dim=0).cpu().numpy()
+        # librosa works best with float32 numpy arrays
+        audio_mono = torch.mean(w, dim=0).cpu().numpy().astype(np.float32)
         
         tempo, beat_frames = librosa.beat.beat_track(y=audio_mono, sr=sr)
         beat_times = librosa.frames_to_time(beat_frames, sr=sr)
@@ -627,7 +628,9 @@ class BPMDetector:
             if frame_idx < total_video_frames:
                 beat_events[frame_idx] = 1.0
         
-        bpm_info = f"Estimated BPM: {tempo:.2f}"
+        # --- THE FIX ---
+        # The 'tempo' variable is a numpy array (e.g., array([120.0])). We need to get the first element.
+        bpm_info = f"Estimated BPM: {tempo[0]:.2f}"
         
         # ComfyUI handles list-to-batch conversion for primitive types
         return (bpm_info, beat_events.tolist())

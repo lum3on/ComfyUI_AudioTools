@@ -14,34 +14,34 @@ NODE_CLASS_MAPPINGS = {
     # Processing Nodes
     "AudioAmplify": AmplifyGain,
     "AudioNormalize": NormalizeAudio,
-    "AudioMix": MixAudio,
-    "AudioTrim": TrimAudio,
     "AudioRemoveSilence": RemoveSilence,
     "AudioDeEsser": DeEsser,
     "AudioDePlosive": DePlosive,
     "AudioParametricEQ": ParametricEQ,
     "AudioVocalCompressor": VocalCompressor,
-    "AudioDeHum": DeHum,              # New
-    "AudioNoiseGate": NoiseGate,        # New
+    "AudioDeHum": DeHum,
+    "AudioNoiseGate": NoiseGate,
     
     # Effects Nodes
     "AudioReverb": Reverb,
     "AudioDelay": Delay,
     "AudioPitchTime": PitchTime,
 
-    # Utility Nodes (New Category)
-    "AudioConcatenate": ConcatenateAudio, # New
-    "AudioStereoPan": StereoPanner,     # New
+    # Utility Nodes
+    "AudioMix": MixAudio,
+    "AudioTrim": TrimAudio,
+    "AudioConcatenate": ConcatenateAudio,
+    "AudioStereoPan": StereoPanner,
 
     # AI Nodes
     "AudioStemSeparate": StemSeparator,
     "AudioSpeechDenoise": SpeechDenoise,
     "AudioSpeechToTextWhisper": SpeechToTextWhisper,
 
-    # Analysis & Reactive Nodes (New Category)
-    "AudioLoudnessMeter": LoudnessMeter, # New
-    "AudioBPMDetector": BPMDetector,     # New
-    "AudioReactiveParam": AudioReactiveParameter, # New
+    # Analysis & Reactive Nodes
+    "AudioLoudnessMeter": LoudnessMeter,
+    "AudioBPMDetector": BPMDetector,
+    "AudioReactiveParam": AudioReactiveParameter,
 
     # Visualization Nodes
     "AudioDisplayWaveform": DisplayWaveform,
@@ -56,34 +56,34 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     # Processing Nodes
     "AudioAmplify": "Amplify / Gain",
     "AudioNormalize": "Normalize Audio",
-    "AudioMix": "Mix Audio Tracks",
-    "AudioTrim": "Trim Audio",
     "AudioRemoveSilence": "Remove Silence",
     "AudioDeEsser": "De-Esser",
     "AudioDePlosive": "De-Plosive (Low Cut)",
     "AudioParametricEQ": "Parametric EQ for Voice",
     "AudioVocalCompressor": "Vocal Compressor",
-    "AudioDeHum": "De-Hum (50/60Hz)", # New
-    "AudioNoiseGate": "Noise Gate",     # New
+    "AudioDeHum": "De-Hum (50/60Hz)",
+    "AudioNoiseGate": "Noise Gate",
     
     # Effects Nodes
     "AudioReverb": "Reverb",
     "AudioDelay": "Delay / Echo",
     "AudioPitchTime": "Pitch Shift / Time Stretch",
 
-    # Utility Nodes (New Category)
-    "AudioConcatenate": "Concatenate Audio", # New
-    "AudioStereoPan": "Stereo Panner",      # New
+    # Utility Nodes
+    "AudioMix": "Mix Audio Tracks",
+    "AudioTrim": "Trim Audio",
+    "AudioConcatenate": "Concatenate Audio",
+    "AudioStereoPan": "Stereo Panner",
 
     # AI Nodes
     "AudioStemSeparate": "Stem Separator (AI)",
     "AudioSpeechDenoise": "Speech Denoise (AI)",
     "AudioSpeechToTextWhisper": "Speech-to-Text (Whisper)",
 
-    # Analysis & Reactive Nodes (New Category)
-    "AudioLoudnessMeter": "Loudness Meter (LUFS)", # New
-    "AudioBPMDetector": "BPM Detector / Reactive", # New
-    "AudioReactiveParam": "Audio-Reactive Envelope", # New
+    # Analysis & Reactive Nodes
+    "AudioLoudnessMeter": "Loudness Meter (LUFS)",
+    "AudioBPMDetector": "BPM Detector / Reactive",
+    "AudioReactiveParam": "Audio-Reactive Envelope",
 
     # Visualization Nodes
     "AudioDisplayWaveform": "Display Waveform",
