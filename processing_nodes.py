@@ -6,7 +6,68 @@ import torchaudio.functional as F
 import torchaudio.transforms as T
 import math
 
-# --- All nodes are now consistent: they process the first audio in a batch ---
+# --- helper ---
+
+def _manual_compressor(waveform, sample_rate, threshold_db, ratio, attack_ms, release_ms, makeup_gain_db=0.0):
+    """A manual, PyTorch-based implementation of a dynamic range compressor that is multi-channel safe."""
+    
+    # Convert parameters to useful units
+    threshold_lin = 10**(threshold_db / 20.0)
+    # Use torch.tensor for coefficients to ensure they are on the correct device
+    attack_coeff = torch.tensor(math.exp(-1.0 / (sample_rate * (attack_ms / 1000.0))), device=waveform.device)
+    release_coeff = torch.tensor(math.exp(-1.0 / (sample_rate * (release_ms / 1000.0))), device=waveform.device)
+    makeup_gain_lin = 10**(makeup_gain_db / 20.0)
+
+    num_channels, num_samples = waveform.shape
+    envelope = torch.zeros(num_channels, device=waveform.device)
+    gain = torch.ones(num_channels, device=waveform.device)
+    output_waveform = torch.zeros_like(waveform)
+
+    # Process sample by sample
+    for i in range(num_samples):
+        # Peak detection for the envelope - this is a single value across all channels
+        input_peak = torch.max(torch.abs(waveform[:, i]))
+        
+        # --- THE FIX: Use torch.where for conditional logic on tensors ---
+        # Instead of a Python 'if', we create a boolean mask and use torch.where.
+        # This allows different attack/release behavior for each channel if needed,
+        # but here we use a single peak for all channels for simplicity.
+        
+        # Determine whether to use attack or release coefficient
+        # True where input_peak is greater than the channel's envelope
+        use_attack = input_peak > envelope
+        
+        # Apply attack to some channels and release to others using the mask
+        envelope = torch.where(
+            use_attack,
+            attack_coeff * envelope + (1 - attack_coeff) * input_peak, # if True (attack)
+            release_coeff * envelope + (1 - release_coeff) * input_peak  # if False (release)
+        )
+        
+        # Gain computation
+        # Add a small epsilon to avoid log10(0)
+        envelope_db = 20 * torch.log10(envelope + 1e-9)
+        
+        # Create a mask for channels that are above the threshold
+        above_threshold = envelope_db > threshold_db
+        
+        # Calculate the gain reduction that *would* be applied if above threshold
+        gain_reduction_db = (threshold_db - envelope_db) * (1.0 - (1.0 / ratio))
+        reduced_gain = 10**(gain_reduction_db / 20.0)
+        
+        # Use torch.where to apply the reduced_gain only to the channels above threshold
+        gain = torch.where(
+            above_threshold,
+            reduced_gain,           # if True
+            1.0                     # if False
+        )
+
+        # Apply gain to the current sample for all channels at once
+        output_waveform[:, i] = waveform[:, i] * gain * makeup_gain_lin
+        
+    return output_waveform.clamp(-1.0, 1.0)
+
+# --- nodes ---
 
 class AmplifyGain:
     @classmethod
@@ -123,15 +184,26 @@ def _calculate_highshelf_coeffs(gain_db, q, cutoff_freq, sample_rate):
 class DeEsser:
     @classmethod
     def INPUT_TYPES(s):
-        return { "required": { "audio": ("AUDIO",), "frequency_hz": ("INT", {"default": 6000, "min": 2000, "max": 12000, "step": 100}), "reduction_db": ("FLOAT", {"default": -10.0, "min": -30.0, "max": 0.0, "step": 0.5}), } }
+        return {
+            "required": {
+                "audio": ("AUDIO",),
+                "frequency_hz": ("INT", {"default": 7000, "min": 2000, "max": 12000, "step": 100, "tooltip": "The center frequency of the sibilance to reduce"}),
+                "reduction_db": ("FLOAT", {"default": -12.0, "min": -36.0, "max": 0.0, "step": 0.5, "tooltip": "How much to reduce the sibilance by"}),
+                "q_factor": ("FLOAT", {"default": 3.0, "min": 0.5, "max": 10.0, "step": 0.1, "tooltip": "The narrowness of the filter. Higher Q = more surgical cut."}),
+            }
+        }
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "de_ess"
     CATEGORY = "L3/AudioTools/Processing"
-    def de_ess(self, audio: dict, frequency_hz: int, reduction_db: float):
+
+    def de_ess(self, audio: dict, frequency_hz: int, reduction_db: float, q_factor: float):
         w, sample_rate = audio["waveform"][0], audio["sample_rate"]
-        # --- THE FIX: Use the generic F.biquad with manually calculated coefficients ---
-        b0, b1, b2, a0, a1, a2 = _calculate_highshelf_coeffs(reduction_db, 0.707, frequency_hz, sample_rate)
+        
+        # This is the correct approach: use a peaking filter with negative gain to create a notch.
+        b0, b1, b2, a0, a1, a2 = _calculate_peaking_coeffs(reduction_db, q_factor, frequency_hz, sample_rate)
+        
         processed_w = F.biquad(w, b0=b0, b1=b1, b2=b2, a0=a0, a1=a1, a2=a2)
+        
         return ({"waveform": processed_w.unsqueeze(0), "sample_rate": sample_rate},)
 
 class DePlosive:
@@ -165,16 +237,36 @@ class ParametricEQ:
         return ({"waveform": w.unsqueeze(0), "sample_rate": sample_rate},)
         
 class VocalCompressor:
-    # ... (This node and the rest of the file are unchanged) ...
     @classmethod
     def INPUT_TYPES(s):
-        return { "required": { "audio": ("AUDIO",), "threshold_db": ("FLOAT", {"default": -16.0, "min": -60.0, "max": 0.0, "step": 0.5}), "ratio": ("FLOAT", {"default": 4.0, "min": 1.0, "max": 20.0, "step": 0.1}), "attack_ms": ("FLOAT", {"default": 5.0, "min": 0.1, "max": 100.0, "step": 0.1}), "release_ms": ("FLOAT", {"default": 100.0, "min": 10.0, "max": 1000.0, "step": 5.0}), } }
+        return {
+            "required": {
+                "audio": ("AUDIO",),
+                "threshold_db": ("FLOAT", {"default": -16.0, "min": -60.0, "max": 0.0, "step": 0.5}),
+                "ratio": ("FLOAT", {"default": 4.0, "min": 1.0, "max": 20.0, "step": 0.1}),
+                "attack_ms": ("FLOAT", {"default": 5.0, "min": 0.1, "max": 100.0, "step": 0.1}),
+                "release_ms": ("FLOAT", {"default": 100.0, "min": 10.0, "max": 1000.0, "step": 5.0}),
+                "makeup_gain_db": ("FLOAT", {"default": 4.0, "min": 0.0, "max": 24.0, "step": 0.5, "tooltip": "Apply gain after compression to make up for volume loss"}),
+            }
+        }
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "compress"
     CATEGORY = "L3/AudioTools/Processing"
-    def compress(self, audio: dict, threshold_db: float, ratio: float, attack_ms: float, release_ms: float):
+    
+    def compress(self, audio: dict, threshold_db: float, ratio: float, attack_ms: float, release_ms: float, makeup_gain_db: float):
         w, sample_rate = audio["waveform"][0], audio["sample_rate"]
-        processed_w = F.dynamic_range_compressor(w, threshold=threshold_db, ratio=ratio, attack_time=attack_ms/1000, release_time=release_ms/1000)
+        
+        # --- THE FIX: Use the robust, manual compressor implementation ---
+        processed_w = _manual_compressor(
+            w, 
+            sample_rate, 
+            threshold_db, 
+            ratio, 
+            attack_ms, 
+            release_ms,
+            makeup_gain_db
+        )
+        
         return ({"waveform": processed_w.unsqueeze(0), "sample_rate": sample_rate},)
 
 class Reverb:
