@@ -2,7 +2,8 @@ from .processing_nodes import (AmplifyGain, NormalizeAudio, MixAudio, RemoveSile
                                DeEsser, DePlosive, ParametricEQ, VocalCompressor, 
                                Reverb, Delay, PitchTime, TrimAudio,
                                ConcatenateAudio, StereoPanner, DeHum, NoiseGate,
-                               LoudnessMeter, BPMDetector, AudioReactiveParameter)
+                               LoudnessMeter, BPMDetector, AudioReactiveParameter,
+                               FadeIn, FadeOut, PadAudio)
 from .ai_nodes import StemSeparator, SpeechDenoise, SpeechToTextWhisper
 from .visualization_nodes import DisplayWaveform, CompareWaveforms, ShowAudioInfo # New import
 from .generation_nodes import TextToSpeechNode
@@ -26,12 +27,15 @@ NODE_CLASS_MAPPINGS = {
     "AudioReverb": Reverb,
     "AudioDelay": Delay,
     "AudioPitchTime": PitchTime,
+    "AudioFadeIn": FadeIn,
+    "AudioFadeOut": FadeOut,
 
     # Utility Nodes
     "AudioMix": MixAudio,
     "AudioTrim": TrimAudio,
     "AudioConcatenate": ConcatenateAudio,
     "AudioStereoPan": StereoPanner,
+    "AudioPad": PadAudio,
 
     # AI Nodes
     "AudioStemSeparate": StemSeparator,
@@ -68,12 +72,15 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "AudioReverb": "Reverb",
     "AudioDelay": "Delay / Echo",
     "AudioPitchTime": "Pitch Shift / Time Stretch",
+    "AudioFadeIn": "Fade In",
+    "AudioFadeOut": "Fade Out", 
 
     # Utility Nodes
     "AudioMix": "Mix Audio Tracks",
     "AudioTrim": "Trim Audio",
     "AudioConcatenate": "Concatenate Audio",
     "AudioStereoPan": "Stereo Panner",
+    "AudioPad": "Pad With Silence",
 
     # AI Nodes
     "AudioStemSeparate": "Stem Separator (AI)",

@@ -679,3 +679,83 @@ class AudioReactiveParameter:
                 envelope[i] = alpha * envelope[i] + (1 - alpha) * envelope[i-1]
 
         return (envelope.tolist(),)
+    
+class FadeIn:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "audio": ("AUDIO",),
+                "duration_seconds": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 60.0, "step": 0.1}),
+            }
+        }
+    RETURN_TYPES = ("AUDIO",)
+    FUNCTION = "fade"
+    CATEGORY = "L3/AudioTools/Effects"
+
+    def fade(self, audio: dict, duration_seconds: float):
+        w, sr = audio["waveform"][0], audio["sample_rate"]
+        num_channels, total_samples = w.shape
+        
+        fade_samples = min(int(duration_seconds * sr), total_samples)
+        
+        if fade_samples > 0:
+            fade_curve = torch.linspace(0.0, 1.0, fade_samples, device=w.device).unsqueeze(0)
+            w[:, :fade_samples] *= fade_curve
+            
+        return ({"waveform": w.unsqueeze(0), "sample_rate": sr},)
+
+class FadeOut:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "audio": ("AUDIO",),
+                "duration_seconds": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 60.0, "step": 0.1}),
+            }
+        }
+    RETURN_TYPES = ("AUDIO",)
+    FUNCTION = "fade"
+    CATEGORY = "L3/AudioTools/Effects"
+
+    def fade(self, audio: dict, duration_seconds: float):
+        w, sr = audio["waveform"][0], audio["sample_rate"]
+        num_channels, total_samples = w.shape
+        
+        fade_samples = min(int(duration_seconds * sr), total_samples)
+        
+        if fade_samples > 0:
+            fade_curve = torch.linspace(1.0, 0.0, fade_samples, device=w.device).unsqueeze(0)
+            w[:, -fade_samples:] *= fade_curve
+
+        return ({"waveform": w.unsqueeze(0), "sample_rate": sr},)
+
+class PadAudio:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "audio": ("AUDIO",),
+                "pad_start_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1}),
+                "pad_end_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1}),
+            }
+        }
+    RETURN_TYPES = ("AUDIO",)
+    FUNCTION = "pad"
+    CATEGORY = "L3/AudioTools/Utility"
+
+    def pad(self, audio: dict, pad_start_seconds: float, pad_end_seconds: float):
+        w, sr = audio["waveform"][0], audio["sample_rate"]
+        num_channels, total_samples = w.shape
+
+        if pad_start_seconds > 0:
+            pad_samples = int(pad_start_seconds * sr)
+            start_padding = torch.zeros((num_channels, pad_samples), device=w.device)
+            w = torch.cat((start_padding, w), dim=1)
+
+        if pad_end_seconds > 0:
+            pad_samples = int(pad_end_seconds * sr)
+            end_padding = torch.zeros((num_channels, pad_samples), device=w.device)
+            w = torch.cat((w, end_padding), dim=1)
+            
+        return ({"waveform": w.unsqueeze(0), "sample_rate": sr},)
