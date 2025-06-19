@@ -2,18 +2,21 @@
 
 Welcome to the ComfyUI Audio Toolkit, a comprehensive custom node pack for [ComfyUI](https://github.com/comfyanonymous/ComfyUI) that brings a full suite of audio generation, processing, and analysis capabilities into your generative workflows.
 
-This toolkit is designed for a wide range of audio tasks, from podcast enhancement and text-to-speech to creative music manipulation and AI-powered transcription.
+This toolkit is designed for a wide range of audio tasks, from podcast enhancement and text-to-speech to creative music manipulation and audio-reactive visual generation.
 
 ## Features
 
--   **Essential Processing**: Normalize, Amplify, Mix, Trim silence, Compress, and apply professional EQ.
+-   **Audio Generation**: Synthesize speech from text using your system's installed voices.
+-   **Utility**: Concatenate, and Pan audio.
+-   **Professional Processing**: Trim, Normalize, Amplify, Mix, Compress, apply EQ, and use a Noise Gate.
+-   **Audio Repair**: Remove silence, de-ess harsh vocals, and de-hum electrical noise.
 -   **Creative Effects**: Add Reverb, Delay/Echo, and perform Pitch Shifting or Time Stretching.
 -   **AI-Powered Tools**:
-    -   **Music Separation**: Split songs into `vocals`, `bass`, `drums`, and `other` stems using Demucs.
+    -   **Music Separation**: Split songs into `vocals`, `bass`, `drums`, and `other` stems.
     -   **Voice Enhancement**: Isolate vocals to remove background noise from speech recordings.
     -   **Transcription**: Transcribe audio to text with state-of-the-art accuracy using OpenAI's Whisper.
--   **Visualization & Analysis**: Generate waveform images, compare two audio signals visually, and inspect detailed technical information.
--   **Audio Generation**: Synthesize speech from text using your system's installed voices.
+-   **Analysis & Visualization**: Generate waveform images, inspect technical info, measure industry-standard loudness (LUFS), and detect BPM.
+-   **Audio-Reactive Generation**: Generate frame-by-frame values from an audio's volume or beat, ready to be plugged into any animation parameter (e.g., zoom, denoise, motion).
 
 ## Installation
 
@@ -25,77 +28,65 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
     ```bash
     git clone https://github.com/njlent/ComfyUI_AudioTools.git
     ```
-    *(Replace with the actual repository URL)*
 3.  Install the required dependencies from within the new directory:
     ```bash
-    pip install -r njlent-comfyui_audiotools/requirements.txt
+    pip install -r ComfyUI_AudioTools/requirements.txt
     ```
 4.  Restart ComfyUI.
 
-## Example Workflows
-
-### 1. Podcast Cleanup & Voice Enhancement
-
-This workflow takes a raw voice recording and makes it sound professional and clean.
-
-1.  **Load Audio**: Load your raw WAV or MP3 recording.
-2.  **Speech Denoise (AI)**: Connect the audio to remove background noise.
-3.  **Remove Silence**: Automatically trim long pauses from the speech.
-4.  **Parametric EQ for Voice**: Apply a low-cut to remove rumble and add a presence/air boost for clarity.
-5.  **Vocal Compressor**: Even out the volume levels for a consistent, professional sound.
-6.  **Normalize Audio**: Bring the final audio to a standard peak level (e.g., -1.0 dB).
-7.  **Preview Audio**: Listen to the final, cleaned-up result.
-8.  **Save Audio**: Save the processed file as a new WAV or MP3.
-
-### 2. AI Music Stem Separation
-
-This workflow demonstrates how to isolate the vocals from a song.
-
-1.  **Load Audio**: Load a music track.
-2.  **Stem Separator (AI)**: Connect the audio. This node is computationally intensive and will take time to process.
-3.  **Connect the `vocals` output** to a **Preview Audio** or **Save Audio** node.
-4.  *(Optional)*: Mix the stems back together. For example, connect `bass`, `drums`, and `other` to an **AudioMix** node to create an instrumental version.
-
 ## Node Reference
 
-### Processing Nodes
--   **Amplify / Gain**: Adjusts the volume with a specific dB gain.
--   **Normalize Audio**: Normalizes the audio to a target peak dB level.
--   **Mix Audio Tracks**: Combines two audio tracks, with individual gain control for each.
--   **Trim Audio**: Cuts a specified number of seconds from the beginning and/or end of an audio clip.
--   **Remove Silence**: Intelligently removes silent sections from an audio clip.
--   **De-Esser**: Reduces harsh "s" sounds (sibilance) in voice recordings.
--   **De-Plosive (Low Cut)**: A high-pass filter to reduce low-frequency pops from "p" and "b" sounds.
--   **Parametric EQ for Voice**: A simple 3-band equalizer designed to enhance vocal clarity (Low-Cut, Presence, Air).
--   **Vocal Compressor**: Evens out the dynamic range, making quiet parts louder and loud parts quieter.
+### Generation Nodes
+-   **Text to Speech**: Converts text into spoken audio.
+
+### Utility Nodes
+-   **Concatenate Audio**: Joins two audio clips together end-to-end.
+-   **Stereo Panner**: Positions a sound in the stereo (left/right) field.
+
+### Processing & Repair Nodes
+-   **Amplify / Gain**: Adjusts volume by a dB value.
+-   **Normalize Audio**: Normalizes peak volume to a target dB level.
+-   **Mix Audio Tracks**: Combines two audio tracks.
+-   **Trim Audio**: Cuts seconds from the beginning or end of a clip.
+-   **Remove Silence**: Intelligently trims silent sections.
+-   **Noise Gate**: Silences audio that falls below a volume threshold.
+-   **De-Esser**: Reduces harsh "s" sounds in voice recordings.
+-   **De-Plosive (Low Cut)**: Reduces low-frequency pops.
+-   **De-Hum (50/60Hz)**: Removes electrical power line hum.
+-   **Parametric EQ for Voice**: A 3-band EQ for enhancing vocal clarity.
+-   **Vocal Compressor**: Evens out dynamic range.
 
 ### Effects Nodes
--   **Reverb**: Adds spatial reverberation to the audio.
--   **Delay / Echo**: Creates a delay or echo effect with feedback control.
--   **Pitch Shift / Time Stretch**: Changes the audio's pitch (in semitones) and/or playback speed.
+-   **Reverb**: Adds spatial reverberation.
+-   **Delay / Echo**: Creates a delay/echo effect.
+-   **Pitch Shift / Time Stretch**: Changes audio pitch and/or speed.
 
 ### AI Nodes
--   **Stem Separator (AI)**: Splits a music track into four stems: `vocals`, `bass`, `drums`, and `other`.
--   **Speech Denoise (AI)**: Isolates the vocal stem from an audio track to effectively remove background noise.
--   **Speech-to-Text (Whisper)**: Transcribes audio into text using OpenAI's Whisper. Supports multiple languages and translation to English.
+-   **Stem Separator (AI)**: Splits music into `vocals`, `bass`, `drums`, and `other`.
+-   **Speech Denoise (AI)**: Isolates vocals to remove background noise.
+-   **Speech-to-Text (Whisper)**: Transcribes audio to text.
+
+### Analysis & Reactive Nodes
+-   **Loudness Meter (LUFS)**: Measures perceived loudness to the EBU R 128 broadcast standard.
+-   **BPM Detector / Reactive**: Estimates tempo and outputs a list of `1.0`s on beat frames and `0.0`s otherwise, synced to a target `fps`.
+-   **Audio-Reactive Envelope**: Outputs the volume envelope of an audio clip as a frame-by-frame list of floats (0-1), synced to a target `fps`.
+-   **Show Audio Info**: Displays technical details (sample rate, duration, etc.).
 
 ### Visualization Nodes
 -   **Display Waveform**: Generates a PNG image of the audio's waveform.
--   **Compare Waveforms**: Creates an overlay image of two different audio waveforms for comparison.
--   **Show Audio Info**: Displays technical details (sample rate, duration, channels, etc.) about the audio signal in a text box.
-
-### Generation Nodes
--   **Text to Speech**: Converts a string of text into spoken audio using your system's available TTS voices.
+-   **Compare Waveforms**: Creates an overlay image of two waveforms.
 
 ## Dependencies
 
 This node pack relies on several powerful libraries. The `requirements.txt` file will handle their installation:
 
 -   `torch` & `torchaudio`
--   `demucs` (for AI-powered separation and denoising)
--   `openai-whisper` (for AI-powered transcription)
--   `pyttsx3` (for Text-to-Speech)
--   `matplotlib` (for waveform visualization)
+-   `demucs`
+-   `openai-whisper`
+-   `pyttsx3`
+-   `matplotlib`
+-   `librosa` (for advanced analysis)
+-   `pyloudnorm` (for LUFS measurement)
 
 ---
 Made with ❤️ for the ComfyUI community.
