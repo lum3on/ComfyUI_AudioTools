@@ -23,7 +23,7 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
     ```
 2.  Clone this repository:
     ```bash
-    git clone https://github.com/nlent/ComfyUI_AudioTools.git
+    git clone https://github.com/njlent/ComfyUI_AudioTools.git
     ```
     *(Replace with the actual repository URL)*
 3.  Install the required dependencies from within the new directory:
@@ -62,6 +62,7 @@ This workflow demonstrates how to isolate the vocals from a song.
 -   **Amplify / Gain**: Adjusts the volume with a specific dB gain.
 -   **Normalize Audio**: Normalizes the audio to a target peak dB level.
 -   **Mix Audio Tracks**: Combines two audio tracks, with individual gain control for each.
+-   **Trim Audio**: Cuts a specified number of seconds from the beginning and/or end of an audio clip.
 -   **Remove Silence**: Intelligently removes silent sections from an audio clip.
 -   **De-Esser**: Reduces harsh "s" sounds (sibilance) in voice recordings.
 -   **De-Plosive (Low Cut)**: A high-pass filter to reduce low-frequency pops from "p" and "b" sounds.
