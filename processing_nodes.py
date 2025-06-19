@@ -211,6 +211,47 @@ class MixAudio:
         mixed = (w1 + w2).clamp(-1.0, 1.0)
         return ({"waveform": mixed.unsqueeze(0), "sample_rate": sr1},)
 
+class TrimAudio:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "audio": ("AUDIO",),
+                "trim_start_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1, "tooltip": "How many seconds to cut from the beginning of the audio."}),
+                "trim_end_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1, "tooltip": "How many seconds to cut from the end of the audio."}),
+            }
+        }
+    RETURN_TYPES = ("AUDIO",)
+    FUNCTION = "trim"
+    CATEGORY = "L3/AudioTools/Processing"
+    
+    def trim(self, audio: dict, trim_start_seconds: float, trim_end_seconds: float):
+        w, sample_rate = audio["waveform"][0], audio["sample_rate"]
+        num_channels, total_samples = w.shape
+        
+        # Calculate start and end samples to trim to
+        start_sample = int(trim_start_seconds * sample_rate)
+        end_sample_offset = int(trim_end_seconds * sample_rate)
+        end_sample = total_samples - end_sample_offset
+        
+        # --- Safety Checks ---
+        # Ensure start is not negative
+        start_sample = max(0, start_sample)
+        # Ensure end is not past the start
+        end_sample = max(start_sample, end_sample)
+        # Ensure end is not beyond the total length
+        end_sample = min(total_samples, end_sample)
+
+        # If the trim results in a zero or negative length, return silent audio
+        if start_sample >= end_sample:
+            print(f"ComfyAudio Warning: Trim result for is empty. Returning silent audio.")
+            trimmed_w = torch.zeros((num_channels, 0), device=w.device)
+        else:
+            # Perform the slice
+            trimmed_w = w[:, start_sample:end_sample]
+            
+        return ({"waveform": trimmed_w.unsqueeze(0), "sample_rate": sample_rate},)
+
 class RemoveSilence:
     @classmethod
     def INPUT_TYPES(s):

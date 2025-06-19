@@ -1,6 +1,6 @@
 from .processing_nodes import (AmplifyGain, NormalizeAudio, MixAudio, RemoveSilence, 
                                DeEsser, DePlosive, ParametricEQ, VocalCompressor, 
-                               Reverb, Delay, PitchTime)
+                               Reverb, Delay, PitchTime, TrimAudio)
 from .ai_nodes import StemSeparator, SpeechDenoise, SpeechToTextWhisper
 from .visualization_nodes import DisplayWaveform, CompareWaveforms, ShowAudioInfo # New import
 from .generation_nodes import TextToSpeechNode
@@ -13,6 +13,7 @@ NODE_CLASS_MAPPINGS = {
     "AudioAmplify": AmplifyGain,
     "AudioNormalize": NormalizeAudio,
     "AudioMix": MixAudio,
+    "AudioTrim": TrimAudio,
     "AudioRemoveSilence": RemoveSilence,
     "AudioDeEsser": DeEsser,
     "AudioDePlosive": DePlosive,
@@ -43,6 +44,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "AudioAmplify": "Amplify / Gain",
     "AudioNormalize": "Normalize Audio",
     "AudioMix": "Mix Audio Tracks",
+    "AudioTrim": "Trim Audio",
     "AudioRemoveSilence": "Remove Silence",
     "AudioDeEsser": "De-Esser",
     "AudioDePlosive": "De-Plosive (Low Cut)",
