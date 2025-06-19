@@ -1,0 +1,7 @@
+torchaudio
+demucs==4.0.1
+openai-whisper
+matplotlib
+omegaconf==2.3.0
+hydra-core==1.3.2
+pyttsx3
