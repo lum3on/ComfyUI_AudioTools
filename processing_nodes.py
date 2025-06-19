@@ -8,6 +8,104 @@ import math
 
 # --- helper ---
 
+def _manual_reverb(waveform, sample_rate, room_size, damping, wet_level, dry_level):
+    """A manual, PyTorch-based implementation of an algorithmic reverb."""
+    
+    num_channels, num_samples = waveform.shape
+    device = waveform.device
+
+    # --- Reverb Parameters based on user input ---
+    # Scale room_size (0-100) to a reverb time (0.1-1.0s) and gain (0.5-0.99)
+    room_size_factor = room_size / 100.0
+    decay_time = 0.1 + room_size_factor * 0.9
+    feedback_gain = 0.5 + room_size_factor * 0.49
+
+    # Damping (0-100) controls a simple low-pass filter in the feedback path
+    damping_factor = damping / 100.0
+    damping_coeff = 1.0 - damping_factor * 0.7 # High damping = more filtering
+
+    # --- Filter Definitions ---
+    # Using prime-ish numbers for delay lengths to avoid metallic resonance
+    comb_delays = [int(d * sample_rate) for d in [0.0297, 0.0371, 0.0411, 0.0437]]
+    allpass_delays = [int(d * sample_rate) for d in [0.005, 0.0017]]
+    allpass_gain = 0.7
+
+    # Initialize delay line buffers
+    comb_buffers = [torch.zeros(num_channels, d, device=device) for d in comb_delays]
+    allpass_buffers = [torch.zeros(num_channels, d, device=device) for d in allpass_delays]
+    
+    comb_pos = [0] * 4
+    allpass_pos = [0] * 2
+
+    output_waveform = torch.zeros_like(waveform)
+
+    # Process sample by sample
+    for i in range(num_samples):
+        s_in = waveform[:, i]
+        s_comb_out = torch.zeros(num_channels, device=device)
+
+        # 1. Parallel Comb Filters to create echoes
+        for j in range(len(comb_delays)):
+            delayed_sample = comb_buffers[j][:, comb_pos[j]]
+            
+            # Apply damping (simple low-pass) to the feedback
+            damped_sample = delayed_sample * damping_coeff
+            
+            # Store new value in buffer
+            comb_buffers[j][:, comb_pos[j]] = s_in + damped_sample * feedback_gain
+            comb_pos[j] = (comb_pos[j] + 1) % comb_delays[j]
+            
+            s_comb_out += delayed_sample
+
+        # 2. Serial All-Pass Filters to diffuse the sound
+        s_allpass_in = s_comb_out
+        for j in range(len(allpass_delays)):
+            delayed_sample = allpass_buffers[j][:, allpass_pos[j]]
+            
+            s_allpass_out = -s_allpass_in * allpass_gain + delayed_sample
+            allpass_buffers[j][:, allpass_pos[j]] = s_allpass_in + s_allpass_out * allpass_gain
+            allpass_pos[j] = (allpass_pos[j] + 1) % allpass_delays[j]
+            
+            s_allpass_in = s_allpass_out
+            
+        s_wet = s_allpass_in
+        s_dry = waveform[:, i]
+        
+        output_waveform[:, i] = (s_dry * dry_level + s_wet * wet_level).clamp(-1.0, 1.0)
+
+    return output_waveform
+
+
+def _calculate_peaking_coeffs(gain_db, q, center_freq, sample_rate):
+    A = 10**(gain_db / 40.0)
+    w0 = 2.0 * math.pi * center_freq / sample_rate
+    alpha = math.sin(w0) / (2.0 * q)
+    cos_w0 = math.cos(w0)
+    
+    b0 = 1.0 + alpha * A
+    b1 = -2.0 * cos_w0
+    b2 = 1.0 - alpha * A
+    a0 = 1.0 + alpha / A
+    a1 = -2.0 * cos_w0
+    a2 = 1.0 - alpha / A
+    return b0/a0, b1/a0, b2/a0, a0/a0, a1/a0, a2/a0
+
+
+def _calculate_highshelf_coeffs(gain_db, q, cutoff_freq, sample_rate):
+    A = 10**(gain_db / 40.0)
+    w0 = 2.0 * math.pi * cutoff_freq / sample_rate
+    alpha = math.sin(w0) / (2.0 * q)
+    cos_w0 = math.cos(w0)
+    
+    b0 = A * ((A + 1) - (A - 1) * cos_w0 + 2 * math.sqrt(A) * alpha)
+    b1 = 2 * A * ((A - 1) - (A + 1) * cos_w0)
+    b2 = A * ((A + 1) - (A - 1) * cos_w0 - 2 * math.sqrt(A) * alpha)
+    a0 = (A + 1) + (A - 1) * cos_w0 + 2 * math.sqrt(A) * alpha
+    a1 = -2 * ((A - 1) + (A + 1) * cos_w0)
+    a2 = (A + 1) + (A - 1) * cos_w0 - 2 * math.sqrt(A) * alpha
+    return b0/a0, b1/a0, b2/a0, a0/a0, a1/a0, a2/a0
+
+
 def _manual_compressor(waveform, sample_rate, threshold_db, ratio, attack_ms, release_ms, makeup_gain_db=0.0):
     """A manual, PyTorch-based implementation of a dynamic range compressor that is multi-channel safe."""
     
@@ -152,34 +250,6 @@ class RemoveSilence:
         processed_w = torch.cat(final_parts, dim=1)
         return ({"waveform": processed_w.unsqueeze(0), "sample_rate": sample_rate},)
 
-# --- HELPER FUNCTIONS FOR EQ COEFFICIENTS ---
-def _calculate_peaking_coeffs(gain_db, q, center_freq, sample_rate):
-    A = 10**(gain_db / 40.0)
-    w0 = 2.0 * math.pi * center_freq / sample_rate
-    alpha = math.sin(w0) / (2.0 * q)
-    cos_w0 = math.cos(w0)
-    
-    b0 = 1.0 + alpha * A
-    b1 = -2.0 * cos_w0
-    b2 = 1.0 - alpha * A
-    a0 = 1.0 + alpha / A
-    a1 = -2.0 * cos_w0
-    a2 = 1.0 - alpha / A
-    return b0/a0, b1/a0, b2/a0, a0/a0, a1/a0, a2/a0
-
-def _calculate_highshelf_coeffs(gain_db, q, cutoff_freq, sample_rate):
-    A = 10**(gain_db / 40.0)
-    w0 = 2.0 * math.pi * cutoff_freq / sample_rate
-    alpha = math.sin(w0) / (2.0 * q)
-    cos_w0 = math.cos(w0)
-    
-    b0 = A * ((A + 1) - (A - 1) * cos_w0 + 2 * math.sqrt(A) * alpha)
-    b1 = 2 * A * ((A - 1) - (A + 1) * cos_w0)
-    b2 = A * ((A + 1) - (A - 1) * cos_w0 - 2 * math.sqrt(A) * alpha)
-    a0 = (A + 1) + (A - 1) * cos_w0 + 2 * math.sqrt(A) * alpha
-    a1 = -2 * ((A - 1) + (A + 1) * cos_w0)
-    a2 = (A + 1) + (A - 1) * cos_w0 - 2 * math.sqrt(A) * alpha
-    return b0/a0, b1/a0, b2/a0, a0/a0, a1/a0, a2/a0
 
 class DeEsser:
     @classmethod
@@ -272,13 +342,25 @@ class VocalCompressor:
 class Reverb:
     @classmethod
     def INPUT_TYPES(s):
-        return { "required": { "audio": ("AUDIO",), "room_size": ("FLOAT", {"default": 50.0, "min": 0.0, "max": 100.0, "step": 1.0}), "damping": ("FLOAT", {"default": 50.0, "min": 0.0, "max": 100.0, "step": 1.0}), "wet_level": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01}), "dry_level": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}), } }
+        return {
+            "required": {
+                "audio": ("AUDIO",),
+                "room_size": ("FLOAT", {"default": 50.0, "min": 0.0, "max": 100.0, "step": 1.0, "tooltip": "Size of the simulated room. Controls decay time."}),
+                "damping": ("FLOAT", {"default": 50.0, "min": 0.0, "max": 100.0, "step": 1.0, "tooltip": "How much high-frequencies are absorbed. Higher = darker sound."}),
+                "wet_level": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "Volume of the reverb signal."}),
+                "dry_level": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "Volume of the original signal."}),
+            }
+        }
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "apply_reverb"
     CATEGORY = "L3/AudioTools/Effects"
+    
     def apply_reverb(self, audio: dict, room_size: float, damping: float, wet_level: float, dry_level: float):
         w, sample_rate = audio["waveform"][0], audio["sample_rate"]
-        processed_w = F.reverb(w, sample_rate, room_size=room_size, damping=damping, wet_level=wet_level, dry_level=dry_level)
+        
+        # --- THE FIX: Use the robust, manual reverb implementation ---
+        processed_w = _manual_reverb(w, sample_rate, room_size, damping, wet_level, dry_level)
+        
         return ({"waveform": processed_w.unsqueeze(0), "sample_rate": sample_rate},)
 
 class Delay:
