@@ -110,7 +110,7 @@ This workflow makes an animation parameter pulse with the beat of a song.
 -   **Audio-Reactive Envelope**: Outputs the volume envelope of an audio clip as a frame-by-frame list of floats (0-1), synced to a target `fps`.
 -   **Show Audio Info**: Displays technical details (sample rate, duration, batch size, etc.).
 
-### Visualization Nodes (Supports batches.)
+### Visualization Nodes
 -   **Display Waveform**: Generates a PNG image of the audio's waveform.
 -   **Compare Waveforms**: Creates an overlay image of two waveforms.
 
