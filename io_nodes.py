@@ -1,114 +1,99 @@
-# File: io_nodes.py (Corrected and Enhanced)
-
 import torch
 import torchaudio
-import folder_paths
 import os
-import time
-import hashlib
+import glob
+import numpy as np
 
-class LoadAudio:
+class LoadAudioBatch:
     @classmethod
     def INPUT_TYPES(s):
-        # The 'audio' type is a custom widget provided by ComfyUI that gives us the file path.
-        # It's not a real file upload, but a file picker from the input directory.
-        # To allow true uploads, you'd need a different setup or a pre-processing step.
-        # For now, we'll assume files are in the ComfyUI 'input' folder.
-        input_dir = folder_paths.get_input_directory()
-        files = [f for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
         return {
             "required": {
-                "audio_file": (sorted(files), {"audio_upload": True}),
+                "directory_path": ("STRING", {"multiline": False, "default": ""}),
+                "file_pattern": ("STRING", {"multiline": False, "default": "*.wav"}),
+                "skip_first": ("INT", {"default": 0, "min": 0, "max": 10000, "step": 1, "tooltip": "Number of files to skip from the beginning of the sorted list."}),
+                "load_cap": ("INT", {"default": -1, "min": -1, "max": 10000, "step": 1, "tooltip": "Maximum number of files to load. -1 means no limit."}),
             }
         }
-
     RETURN_TYPES = ("AUDIO",)
-    FUNCTION = "load_audio"
+    RETURN_NAMES = ("audio_batch",)
+    FUNCTION = "load_batch"
     CATEGORY = "L3/AudioTools/IO"
 
-    def load_audio(self, audio_file):
-        # The widget now handles the upload and provides a path relative to the input dir
-        file_path = folder_paths.get_annotated_filepath(audio_file)
-        print(f"ComfyAudio: Loading audio from {file_path}")
-        waveform, sample_rate = torchaudio.load(file_path)
+    def load_batch(self, directory_path: str, file_pattern: str, skip_first: int, load_cap: int):
+        if not os.path.isdir(directory_path):
+            raise NotADirectoryError(f"ComfyAudio: The specified path is not a valid directory: {directory_path}")
+
+        # Find all files matching the pattern and sort them for predictable order
+        search_path = os.path.join(directory_path, file_pattern)
+        file_paths = sorted(glob.glob(search_path))
+
+        if not file_paths:
+            print(f"ComfyAudio Warning: No files found matching the pattern '{search_path}'. Returning empty audio.")
+            return ({"waveform": torch.zeros((0, 1, 1)), "sample_rate": 44100},)
+
+        print(f"ComfyAudio: Found {len(file_paths)} total files.")
         
-        # Convert to mono for wider compatibility with other nodes
-        if waveform.shape[0] > 1:
-            waveform = torch.mean(waveform, dim=0, keepdim=True)
+        # --- APPLY skip_first and load_cap ---
+        # 1. Skip the first N files
+        if skip_first > 0:
+            if skip_first >= len(file_paths):
+                print(f"ComfyAudio Warning: 'skip_first' ({skip_first}) is greater than or equal to the number of files found ({len(file_paths)}). Returning empty batch.")
+                return ({"waveform": torch.zeros((0, 1, 1)), "sample_rate": 44100},)
+            file_paths = file_paths[skip_first:]
+            print(f"ComfyAudio: Skipped first {skip_first} files, {len(file_paths)} remaining.")
+
+        # 2. Apply the load cap
+        if load_cap != -1 and load_cap > 0:
+            file_paths = file_paths[:load_cap]
+            print(f"ComfyAudio: Capped loading to {len(file_paths)} files.")
+        
+        if not file_paths:
+            print(f"ComfyAudio Warning: No files left to load after applying skip/cap. Returning empty audio.")
+            return ({"waveform": torch.zeros((0, 1, 1)), "sample_rate": 44100},)
+
+        waveforms_list = []
+        target_sr = None
+
+        # First pass: Load all audio and determine the target format
+        for file_path in file_paths:
+            try:
+                waveform, sr = torchaudio.load(file_path)
+                
+                if target_sr is None:
+                    target_sr = sr
+                    
+                if waveform.shape[0] > 1:
+                    waveform = torch.mean(waveform, dim=0, keepdim=True)
+
+                if sr != target_sr:
+                    resampler = torchaudio.transforms.Resample(orig_freq=sr, new_freq=target_sr)
+                    waveform = resampler(waveform)
+                
+                if waveform.dtype != torch.float32 and torch.max(torch.abs(waveform)) > 1.0:
+                    waveform = waveform.to(torch.float32) / torch.iinfo(torch.int16).max
+                
+                waveforms_list.append(waveform)
+            except Exception as e:
+                print(f"ComfyAudio Warning: Skipping file '{file_path}' due to an error: {e}")
+        
+        if not waveforms_list:
+            print(f"ComfyAudio Error: All files failed to load. Returning empty audio.")
+            return ({"waveform": torch.zeros((0, 1, 1)), "sample_rate": 44100},)
             
-        return ((waveform, sample_rate),)
-
-class SaveAudio:
-    def __init__(self):
-        self.output_dir = folder_paths.get_output_directory()
-
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "audio": ("AUDIO",),
-                "filename_prefix": ("STRING", {"default": "ComfyAudio/output"}),
-                "format": (["wav", "mp3", "flac"],),
-            }
-        }
-
-    RETURN_TYPES = ()
-    FUNCTION = "save_audio"
-    OUTPUT_NODE = True
-    CATEGORY = "L3/AudioTools/IO"
-
-    def save_audio(self, audio, filename_prefix, format):
-        waveform, sample_rate = audio
+        # Second pass: Pad all waveforms to the length of the longest one
+        max_len = max(w.shape[1] for w in waveforms_list)
+        padded_waveforms = []
+        for w in waveforms_list:
+            pad_len = max_len - w.shape[1]
+            if pad_len > 0:
+                padded_w = torch.nn.functional.pad(w, (0, pad_len))
+                padded_waveforms.append(padded_w)
+            else:
+                padded_waveforms.append(w)
         
-        # Create the full output path
-        full_output_folder, filename, _ = folder_paths.get_save_image_path(filename_prefix, self.output_dir)
+        batch_tensor = torch.stack(padded_waveforms)
         
-        # Append the correct extension
-        file = f"{filename}.{format}"
-        file_path = os.path.join(full_output_folder, file)
+        print(f"ComfyAudio: Batch created with shape {batch_tensor.shape} (batch_size, channels, samples)")
 
-        print(f"ComfyAudio: Saving audio to {file_path}")
-
-        # *** FIX: Create the directory if it doesn't exist ***
-        os.makedirs(full_output_folder, exist_ok=True)
-
-        # Ensure waveform is on CPU and in a suitable format for saving
-        waveform_cpu = waveform.cpu()
-        
-        torchaudio.save(file_path, waveform_cpu, sample_rate)
-        
-        # Provide the result for the UI
-        return {"ui": {"audio": [{"filename": file, "subfolder": os.path.relpath(full_output_folder, self.output_dir), "type": "output"}]}}
-
-
-class PreviewAudio:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": { "audio": ("AUDIO",) }
-        }
-
-    RETURN_TYPES = ()
-    FUNCTION = "preview_audio"
-    OUTPUT_NODE = True
-    CATEGORY = "L3/AudioTools/IO"
-
-    def preview_audio(self, audio):
-        waveform, sample_rate = audio
-        
-        # Save audio to a temporary file
-        temp_dir = folder_paths.get_temp_directory()
-        
-        # Use a hash of the audio data to name the file, preventing duplicates
-        waveform_hash = hashlib.sha256(waveform.cpu().numpy().tobytes()).hexdigest()
-        filename = f"preview_{waveform_hash[:10]}.wav"
-        file_path = os.path.join(temp_dir, filename)
-
-        # Only save if it doesn't already exist
-        if not os.path.exists(file_path):
-            print(f"ComfyAudio: Saving temporary preview to {file_path}")
-            torchaudio.save(file_path, waveform.cpu(), sample_rate)
-
-        # *** FIX: Return an HTML audio player for the UI ***
-        # The URL is relative to the ComfyUI root. /temp serves files from the temp directory.
-        return {"ui": {"html": [f'<audio src="/temp/{filename}" controls loop></audio>']}}
+        return ({"waveform": batch_tensor, "sample_rate": target_sr},)
