@@ -7,7 +7,7 @@ from .processing_nodes import (AmplifyGain, NormalizeAudio, MixAudio, RemoveSile
 from .ai_nodes import StemSeparator, SpeechDenoise, SpeechToTextWhisper
 from .visualization_nodes import DisplayWaveform, CompareWaveforms, ShowAudioInfo # New import
 from .generation_nodes import TextToSpeechNode
-from .io_nodes import LoadAudioBatch
+from .io_nodes import LoadAudioBatch, GetAudioFromList
 
 NODE_CLASS_MAPPINGS = {
     # Generation Nodes
@@ -55,6 +55,7 @@ NODE_CLASS_MAPPINGS = {
 
     # IO Nodes
     "AudioLoadBatch": LoadAudioBatch,
+    "AudioGetFromList": GetAudioFromList,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -103,6 +104,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 
     # IO Nodes
     "AudioLoadBatch": "Load Audio Batch (Path)",
+    "AudioGetFromList": "Get Audio From List",
 }
 
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
