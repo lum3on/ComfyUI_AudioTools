@@ -15,9 +15,9 @@ class LoadAudioBatch:
                 "load_cap": ("INT", {"default": -1, "min": -1, "max": 10000, "step": 1}),
             }
         }
-    # --- UPDATED: ADD THE NEW AUDIO_LIST OUTPUT ---
-    RETURN_TYPES = ("AUDIO", "AUDIO_LIST")
-    RETURN_NAMES = ("audio_batch", "audio_list")
+    # --- UPDATED: ADD THE NEW FILENAME STRING OUTPUT ---
+    RETURN_TYPES = ("AUDIO", "AUDIO_LIST", "STRING")
+    RETURN_NAMES = ("audio_batch", "audio_list", "filenames")
     FUNCTION = "load_batch"
     CATEGORY = "L3/AudioTools/IO"
 
@@ -30,7 +30,8 @@ class LoadAudioBatch:
         
         if skip_first > 0:
             if skip_first >= len(file_paths):
-                return ({"waveform": torch.zeros((0, 1, 1)), "sample_rate": 44100}, [],) # Return empty for both
+                # --- UPDATED: Return empty for all three outputs ---
+                return ({"waveform": torch.zeros((0, 1, 1)), "sample_rate": 44100}, [], [],)
             file_paths = file_paths[skip_first:]
             print(f"ComfyAudio: Skipped first {skip_first} files, {len(file_paths)} remaining.")
 
@@ -39,11 +40,13 @@ class LoadAudioBatch:
             print(f"ComfyAudio: Capped loading to {len(file_paths)} files.")
         
         if not file_paths:
-            return ({"waveform": torch.zeros((0, 1, 1)), "sample_rate": 44100}, [],)
+            # --- UPDATED: Return empty for all three outputs ---
+            return ({"waveform": torch.zeros((0, 1, 1)), "sample_rate": 44100}, [], [],)
 
-        # This will hold the unpadded audio dicts for the list output
         audio_list_of_dicts = []
         waveforms_list_for_batch = []
+        # --- NEW: List to store names of successfully loaded files ---
+        successful_filenames = []
         target_sr = None
 
         for file_path in file_paths:
@@ -56,29 +59,29 @@ class LoadAudioBatch:
                 if waveform.dtype != torch.float32 and torch.max(torch.abs(waveform)) > 1.0:
                     waveform = waveform.to(torch.float32) / torch.iinfo(torch.int16).max
                 
-                # --- NEW: Create the individual, unpadded audio object for the list ---
-                # The waveform must have a batch dimension of 1 to be a valid AUDIO type
                 unpadded_audio_dict = {"waveform": waveform.unsqueeze(0), "sample_rate": target_sr}
                 audio_list_of_dicts.append(unpadded_audio_dict)
-                
-                # Add the raw waveform (without extra batch dim) to the batch list
                 waveforms_list_for_batch.append(waveform)
+                
+                # --- NEW: Add the simple filename to the success list ---
+                successful_filenames.append(os.path.basename(file_path))
+
             except Exception as e:
                 print(f"ComfyAudio Warning: Skipping file '{file_path}' due to an error: {e}")
         
         if not audio_list_of_dicts:
-            return ({"waveform": torch.zeros((0, 1, 1)), "sample_rate": 44100}, [],)
+            return ({"waveform": torch.zeros((0, 1, 1)), "sample_rate": 44100}, [], [],)
             
-        # Create the padded batch tensor (existing logic)
         max_len = max(w.shape[1] for w in waveforms_list_for_batch)
         padded_waveforms = [torch.nn.functional.pad(w, (0, max_len - w.shape[1])) for w in waveforms_list_for_batch]
         batch_tensor = torch.stack(padded_waveforms)
         batch_dict = {"waveform": batch_tensor, "sample_rate": target_sr}
         
         print(f"ComfyAudio: Batch created with shape {batch_tensor.shape}. List created with {len(audio_list_of_dicts)} items.")
+        print(f"ComfyAudio: Outputting {len(successful_filenames)} filenames.")
 
-        # --- UPDATED: Return both the batch and the list ---
-        return (batch_dict, audio_list_of_dicts)
+        # --- UPDATED: Return the batch, the list, and the list of filenames ---
+        return (batch_dict, audio_list_of_dicts, successful_filenames)
     
 class GetAudioFromList:
     @classmethod
