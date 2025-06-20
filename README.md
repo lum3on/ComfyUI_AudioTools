@@ -1,6 +1,6 @@
 # ComfyUI Audio Toolkit (AudioTools)
 
-Welcome to the ComfyUI Audio Toolkit, a comprehensive custom node pack for [ComfyUI](https://github.com/comfyanonymous/ComfyUI) that brings a full suite of audio generation, processing, and analysis capabilities into your generative workflows.
+Welcome to the ComfyUI Audio Toolkit (AudioTools), a comprehensive custom node pack for [ComfyUI](https://github.com/comfyanonymous/ComfyUI) that brings a full suite of audio generation, processing, and analysis capabilities into your generative workflows.
 
 This toolkit is designed for a wide range of audio tasks, from podcast enhancement and text-to-speech to creative music manipulation and fully automated, batch-processed audio-reactive visual generation.
 
