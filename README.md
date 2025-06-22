@@ -85,7 +85,6 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 -   **BPM Detector / Reactive**: Estimates tempo and outputs a list of `1.0`s on beat frames and `0.0`s otherwise, synced to a target `fps`.
 -   **Audio-Reactive Envelope**: Outputs the volume envelope of an audio clip as a frame-by-frame list of floats (0-1), synced to a target `fps`.
 -   **Show Audio Info**: Displays technical details (sample rate, duration, batch size, etc.).
-*(These nodes analyze the first item in a batch)*
 
 ### Visualization Nodes
 -   **Display Waveform**: Generates a PNG image of the audio's waveform.
