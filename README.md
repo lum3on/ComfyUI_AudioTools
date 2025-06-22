@@ -6,25 +6,6 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 
 -   **Batch Processing**: Most processing, effects, and visualization nodes are now **batch-aware**. You can load an entire folder of audio files, process them all simultaneously, and visualize the results in one go.
 
-## Features
-
--   **Audio Generation**: Synthesize speech from text using your system's installed voices.
--   **Utility**: Concatenate, pan, pad with silence, and apply fades.
--   **Professional Processing**: Trim, Normalize, Amplify, Mix, Compress, apply EQ, and use a Noise Gate. Most are batch-compatible.
--   **Audio Repair**: Remove silence, de-ess harsh vocals, and de-hum electrical noise.
--   **Creative Effects**: Add Reverb, Delay/Echo, and perform Pitch Shifting or Time Stretching.
--   **AI-Powered Tools**:
-    -   **Music Separation**: Split songs into `vocals`, `bass`, `drums`, and `other` stems.
-    -   **Voice Enhancement**: Isolate vocals to remove background noise from speech recordings.
-    -   **Transcription**: Transcribe audio to text with state-of-the-art accuracy using OpenAI's Whisper.
--   **Advanced I/O**:
-    -   **Load an entire folder** of audio files into a single batch, with flexible sorting options.
-    -   Iterate through batches using a dedicated list output.
--   **Analysis & Visualization**:
-    -   Generate waveform images for single clips or entire batches.
-    -   Inspect technical info, measure industry-standard loudness (LUFS), and detect BPM.
--   **Audio-Reactive Generation**: Generate frame-by-frame values from an audio's volume or beat, ready to be plugged into any animation parameter (e.g., zoom, denoise, motion).
-
 ## Installation
 
 1.  Navigate to your ComfyUI `custom_nodes` directory:
