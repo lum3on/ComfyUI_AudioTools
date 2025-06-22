@@ -44,8 +44,7 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 ## Node Reference
 
 ### I/O & Batch Nodes
--   **Load Audio Batch (Path)**: Loads all audio files from a folder path that match a pattern (e.g., `*.wav`).
-    -   **Sorting Options**: Load files alphabetically (A-Z, Z-A) or by date/time (latest/oldest first); use 'Date/Time (Latest First)' with 'load_cap: 1' to get the single newest file.
+-   **Load Audio Batch (Path)**: Loads all audio files from a folder path that match a pattern (e.g., `*.wav`). can be used to get the single newest file.
 -   **Get Audio From List**: Retrieves a single audio clip from the `audio_list` output of the batch loader, allowing for individual processing.
 
 ### Generation Nodes
