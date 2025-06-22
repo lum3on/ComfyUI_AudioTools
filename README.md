@@ -33,7 +33,7 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
     ```
 2.  Clone this repository:
     ```bash
-    git clone https://github.com/njlent/ComfyUI_AudioTools
+    git clone https://github.com/lum3on/ComfyUI_AudioTools
     ```
 3.  Install the required dependencies from within the new directory:
     ```bash
