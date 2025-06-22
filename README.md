@@ -87,7 +87,7 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 -   **Show Audio Info**: Displays technical details (sample rate, duration, batch size, etc.).
 
 ### Visualization Nodes
--   **Display Waveform**: Generates a PNG image of the audio's waveform.
+-   **Display Waveform**: Generates an image of the audio's waveform.
 -   **Compare Waveforms**: Creates an overlay image of two waveforms.
 
 ## Dependencies
@@ -99,6 +99,3 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 -   `matplotlib`
 -   `librosa` (for advanced analysis)
 -   `pyloudnorm` (for LUFS measurement)
-
----
-Made with ❤️ for the ComfyUI community.
