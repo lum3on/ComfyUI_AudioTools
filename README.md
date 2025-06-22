@@ -41,27 +41,6 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
     ```
 4.  Restart ComfyUI.
 
-## Example Workflows
-*json files will follow
-
-### 1. Batch Process an Entire Folder
-
-This workflow demonstrates how to apply the same effects to every audio file in a folder and save the results.
-
-1.  **Load Audio Batch (Path)**: Point this node to your folder of audio files (e.g., `C:\MyRecordings`).
-2.  Connect the `audio_batch` output to a processing chain, for example: `Noise Gate` -> `Vocal Compressor` -> `Normalize Audio`.
-3.  Connect the final processed audio batch to a **Save Audio** node.
-4.  When you run the workflow, every file will be processed and saved with a numbered suffix.
-
-### 2. Audio-Reactive Animation
-
-This workflow makes an animation parameter pulse with the beat of a song.
-
-1.  **Load Audio**: Load a music track.
-2.  **BPM Detector / Reactive**: Connect the audio. Set the `fps` to match your animation workflow (e.g., AnimateDiff).
-3.  The `beat_events` output will now be a batch of floats (e.g., `[0,0,1,0,0,0,1,...]`).
-4.  **Connect `beat_events`** to a parameter on another node, like the `noise` or `motion_scale` input on an animation node. This will cause that parameter to spike to `1.0` only on the frames where a beat occurs.
-
 ## Node Reference
 
 ### I/O & Batch Nodes
@@ -81,8 +60,8 @@ This workflow makes an animation parameter pulse with the beat of a song.
 -   **Amplify / Gain**: Adjusts volume by a dB value.
 -   **Normalize Audio**: Normalizes peak volume to a target dB level.
 -   **Mix Audio Tracks**: Combines two audio tracks.
--   **Trim Audio**: Cuts seconds from the beginning or end of a clip. (Single audio only)
--   **Remove Silence**: Intelligently trims silent sections. (Single audio only)
+-   **Trim Audio**: Cuts seconds from the beginning or end of a clip. (no batches)
+-   **Remove Silence**: Intelligently trims silent sections. (no batches)
 -   **Noise Gate**: Silences audio that falls below a volume threshold.
 -   **De-Esser**: Reduces harsh "s" sounds in voice recordings.
 -   **De-Plosive (Low Cut)**: Reduces low-frequency pops.
@@ -94,9 +73,9 @@ This workflow makes an animation parameter pulse with the beat of a song.
 *(Most nodes in this category are batch-compatible)*
 -   **Reverb**: Adds spatial reverberation.
 -   **Delay / Echo**: Creates a delay/echo effect.
---   **Fade In**: Applies a linear fade-in to the start of the audio.
+-   **Fade In**: Applies a linear fade-in to the start of the audio.
 -   **Fade Out**: Applies a linear fade-out to the end of the audio.
--   **Pitch Shift / Time Stretch**: Changes audio pitch and/or speed. (Single audio only)
+-   **Pitch Shift / Time Stretch**: Changes audio pitch and/or speed. (no batches)
 
 ### AI Nodes
 -   **Stem Separator (AI)**: Splits music into `vocals`, `bass`, `drums`, and `other`.
