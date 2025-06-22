@@ -18,7 +18,7 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
     -   **Voice Enhancement**: Isolate vocals to remove background noise from speech recordings.
     -   **Transcription**: Transcribe audio to text with state-of-the-art accuracy using OpenAI's Whisper.
 -   **Advanced I/O**:
-    -   **Load an entire folder** of audio files into a single batch.
+    -   **Load an entire folder** of audio files into a single batch, with flexible sorting options.
     -   Iterate through batches using a dedicated list output.
 -   **Analysis & Visualization**:
     -   Generate waveform images for single clips or entire batches.
@@ -44,7 +44,8 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 ## Node Reference
 
 ### I/O & Batch Nodes
--   **Load Audio Batch (Path)**: Loads all audio files from a folder path that match a pattern (e.g., `*.wav`). Outputs a padded batch *and* an unpadded list for looping.
+-   **Load Audio Batch (Path)**: Loads all audio files from a folder path that match a pattern (e.g., `*.wav`).
+    -   **Sorting Options**: Load files alphabetically (A-Z, Z-A) or by date/time (latest/oldest first); use 'Date/Time (Latest First)' with 'load_cap: 1' to get the single newest file.
 -   **Get Audio From List**: Retrieves a single audio clip from the `audio_list` output of the batch loader, allowing for individual processing.
 
 ### Generation Nodes
