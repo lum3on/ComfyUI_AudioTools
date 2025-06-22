@@ -4,8 +4,6 @@ Welcome to the ComfyUI Audio Toolkit (AudioTools), a comprehensive custom node p
 
 This toolkit is designed for a wide range of audio tasks, from podcast enhancement and text-to-speech to creative music manipulation and fully automated, batch-processed audio-reactive visual generation.
 
--   **Batch Processing**: Most processing, effects, and visualization nodes are now **batch-aware**. You can load an entire folder of audio files, process them all simultaneously, and visualize the results in one go.
-
 ## Installation
 
 1.  Navigate to your ComfyUI `custom_nodes` directory:
@@ -21,6 +19,8 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
     pip install -r ComfyUI_AudioTools/requirements.txt
     ```
 4.  Restart ComfyUI.
+
+-   **Batch Processing**: Most processing, effects, and visualization nodes are now **batch-aware**. You can load an entire folder of audio files, process them all simultaneously, and visualize the results in one go.
 
 ## Node Reference
 
