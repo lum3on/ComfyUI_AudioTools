@@ -95,7 +95,7 @@ class AmplifyGain:
         return {"required": {"audio": ("AUDIO",), "gain_db": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 24.0, "step": 0.1}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "apply_gain"
-    CATEGORY = "L3/AudioTools/Processing"
+    CATEGORY = "AudioTools/Processing"
     def apply_gain(self, audio: dict, gain_db: float):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -111,7 +111,7 @@ class NormalizeAudio:
         return {"required": {"audio": ("AUDIO",), "target_level_db": ("FLOAT", {"default": -1.0, "min": -12.0, "max": 0.0, "step": 0.1}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "normalize"
-    CATEGORY = "L3/AudioTools/Processing"
+    CATEGORY = "AudioTools/Processing"
     def normalize(self, audio: dict, target_level_db: float):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -131,7 +131,7 @@ class MixAudio:
         return { "required": { "audio_1": ("AUDIO",), "audio_2": ("AUDIO",), "gain_1_db": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 6.0, "step": 0.1}), "gain_2_db": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 6.0, "step": 0.1}), } }
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "mix"
-    CATEGORY = "L3/AudioTools/Processing"
+    CATEGORY = "AudioTools/Processing"
     def mix(self, audio_1: dict, audio_2: dict, gain_1_db: float, gain_2_db: float):
         w1, sr1 = audio_1["waveform"][0], audio_1["sample_rate"]
         w2, sr2 = audio_2["waveform"][0], audio_2["sample_rate"]
@@ -149,7 +149,7 @@ class RemoveSilence:
         return { "required": { "audio": ("AUDIO",), "silence_threshold_db": ("FLOAT", {"default": -40.0, "min": -90.0, "max": 0.0, "step": 1.0}), "min_silence_len_ms": ("INT", {"default": 500, "min": 50, "max": 5000, "step": 50}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "remove_silence"
-    CATEGORY = "L3/AudioTools/Processing"
+    CATEGORY = "AudioTools/Processing"
     def remove_silence(self, audio: dict, silence_threshold_db: float, min_silence_len_ms: int):
         # NOTE: This is a complex operation. Batch processing this node could lead to
         # highly variable lengths, making re-batching difficult. It is left as a
@@ -183,7 +183,7 @@ class DeEsser:
         return {"required": {"audio": ("AUDIO",), "frequency_hz": ("INT", {"default": 7000, "min": 2000, "max": 12000, "step": 100}), "reduction_db": ("FLOAT", {"default": -12.0, "min": -36.0, "max": 0.0, "step": 0.5}), "q_factor": ("FLOAT", {"default": 3.0, "min": 0.5, "max": 10.0, "step": 0.1}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "de_ess"
-    CATEGORY = "L3/AudioTools/Processing"
+    CATEGORY = "AudioTools/Processing"
     def de_ess(self, audio: dict, frequency_hz: int, reduction_db: float, q_factor: float):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -200,7 +200,7 @@ class DePlosive:
         return {"required": {"audio": ("AUDIO",), "cutoff_hz": ("INT", {"default": 80, "min": 40, "max": 300, "step": 5}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "de_plosive"
-    CATEGORY = "L3/AudioTools/Processing"
+    CATEGORY = "AudioTools/Processing"
     def de_plosive(self, audio: dict, cutoff_hz: int):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -216,7 +216,7 @@ class ParametricEQ:
         return {"required": {"audio": ("AUDIO",), "low_cut_hz": ("INT", {"default": 80, "min": 20, "max": 500, "step": 5}), "presence_boost_db": ("FLOAT", {"default": 0.0, "min": -12.0, "max": 12.0, "step": 0.5}), "air_boost_db": ("FLOAT", {"default": 0.0, "min": -12.0, "max": 12.0, "step": 0.5}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "equalize"
-    CATEGORY = "L3/AudioTools/Processing"
+    CATEGORY = "AudioTools/Processing"
     def equalize(self, audio: dict, low_cut_hz: int, presence_boost_db: float, air_boost_db: float):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -236,7 +236,7 @@ class VocalCompressor:
         return {"required": {"audio": ("AUDIO",), "threshold_db": ("FLOAT", {"default": -16.0, "min": -60.0, "max": 0.0, "step": 0.5}), "ratio": ("FLOAT", {"default": 4.0, "min": 1.0, "max": 20.0, "step": 0.1}), "attack_ms": ("FLOAT", {"default": 5.0, "min": 0.1, "max": 100.0, "step": 0.1}), "release_ms": ("FLOAT", {"default": 100.0, "min": 10.0, "max": 1000.0, "step": 5.0}), "makeup_gain_db": ("FLOAT", {"default": 4.0, "min": 0.0, "max": 24.0, "step": 0.5}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "compress"
-    CATEGORY = "L3/AudioTools/Processing"
+    CATEGORY = "AudioTools/Processing"
     def compress(self, audio: dict, threshold_db: float, ratio: float, attack_ms: float, release_ms: float, makeup_gain_db: float):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -315,7 +315,7 @@ class TrimAudio:
         return {"required": {"audio": ("AUDIO",), "trim_start_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1}), "trim_end_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "trim"
-    CATEGORY = "L3/AudioTools/Processing"
+    CATEGORY = "AudioTools/Processing"
     def trim(self, audio: dict, trim_start_seconds: float, trim_end_seconds: float):
         # NOTE: Trimming a batch would result in uneven lengths.
         # This node is designed to operate on a single audio clip.
@@ -373,7 +373,7 @@ class DeHum:
         return {"required": {"audio": ("AUDIO",), "hum_freq": (["60Hz (America)", "50Hz (Europe/Asia)"],), "reduction_db": ("FLOAT", {"default": -30.0, "min": -60.0, "max": 0.0, "step": 1.0}), "q_factor": ("FLOAT", {"default": 10.0, "min": 1.0, "max": 50.0, "step": 0.5}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "dehum"
-    CATEGORY = "L3/AudioTools/Processing"
+    CATEGORY = "AudioTools/Processing"
     def dehum(self, audio: dict, hum_freq: str, reduction_db: float, q_factor: float):
         w_batch, sr = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -393,7 +393,7 @@ class NoiseGate:
         return {"required": {"audio": ("AUDIO",), "threshold_db": ("FLOAT", {"default": -40.0, "min": -90.0, "max": 0.0, "step": 1.0}), "attack_ms": ("FLOAT", {"default": 10.0, "min": 1.0, "max": 100.0, "step": 1.0}), "release_ms": ("FLOAT", {"default": 100.0, "min": 10.0, "max": 1000.0, "step": 1.0}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "gate"
-    CATEGORY = "L3/AudioTools/Processing"
+    CATEGORY = "AudioTools/Processing"
     def gate(self, audio: dict, threshold_db, attack_ms, release_ms):
         w_batch, sr = audio["waveform"], audio["sample_rate"]
         processed_list = []

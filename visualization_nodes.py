@@ -12,7 +12,7 @@ class DisplayWaveform:
     
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "generate_waveform_image"
-    CATEGORY = "L3/AudioTools/Visualization"
+    CATEGORY = "AudioTools/Visualization"
 
     def generate_waveform_image(self, audio, width, height, line_color, bg_color, show_axis):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
@@ -73,7 +73,7 @@ class CompareWaveforms:
     
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "generate_comparison_image"
-    CATEGORY = "L3/AudioTools/Visualization"
+    CATEGORY = "AudioTools/Visualization"
     
     def _prep_waveform(self, w, sr):
         waveform_np = w.cpu().numpy()
@@ -151,7 +151,7 @@ class ShowAudioInfo:
     RETURN_NAMES = ("info",)
     FUNCTION = "show_info"
     OUTPUT_NODE = True
-    CATEGORY = "L3/AudioTools/Visualization"
+    CATEGORY = "AudioTools/Visualization"
 
     def show_info(self, audio: dict):
         waveform = audio.get("waveform")
