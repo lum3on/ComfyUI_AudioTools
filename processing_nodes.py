@@ -7,7 +7,7 @@ import numpy as np
 import librosa
 import pyloudnorm as pyln
 
-# --- HELPER FUNCTIONS (UNCHANGED) ---
+
 def _calculate_peaking_coeffs(gain_db, q, center_freq, sample_rate):
     A = 10**(gain_db / 40.0)
     w0 = 2.0 * math.pi * center_freq / sample_rate
@@ -92,7 +92,9 @@ def _manual_reverb(waveform, sample_rate, room_size, damping, wet_level, dry_lev
 class AmplifyGain:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "gain_db": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 24.0, "step": 0.1}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio to apply gain to."}), 
+                        "gain_db": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 24.0, "step": 0.1, "tooltip": "Amount of gain in decibels (dB) to apply. Positive values amplify, negative values attenuate."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "apply_gain"
     CATEGORY = "AudioTools/Processing"
@@ -108,7 +110,9 @@ class AmplifyGain:
 class NormalizeAudio:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "target_level_db": ("FLOAT", {"default": -1.0, "min": -12.0, "max": 0.0, "step": 0.1}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio to normalize."}), 
+                        "target_level_db": ("FLOAT", {"default": -1.0, "min": -12.0, "max": 0.0, "step": 0.1, "tooltip": "The target peak volume in decibels (dB). A value of 0.0 is maximum, but -1.0 is a common target to avoid clipping."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "normalize"
     CATEGORY = "AudioTools/Processing"
@@ -128,7 +132,11 @@ class NormalizeAudio:
 class MixAudio:
     @classmethod
     def INPUT_TYPES(s):
-        return { "required": { "audio_1": ("AUDIO",), "audio_2": ("AUDIO",), "gain_1_db": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 6.0, "step": 0.1}), "gain_2_db": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 6.0, "step": 0.1}), } }
+        return { "required": { 
+                        "audio_1": ("AUDIO", {"tooltip": "The first audio track."}), 
+                        "audio_2": ("AUDIO", {"tooltip": "The second audio track."}), 
+                        "gain_1_db": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 6.0, "step": 0.1, "tooltip": "Gain in dB for the first audio track."}), 
+                        "gain_2_db": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 6.0, "step": 0.1, "tooltip": "Gain in dB for the second audio track."}), } }
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "mix"
     CATEGORY = "AudioTools/Processing"
@@ -146,7 +154,10 @@ class MixAudio:
 class RemoveSilence:
     @classmethod
     def INPUT_TYPES(s):
-        return { "required": { "audio": ("AUDIO",), "silence_threshold_db": ("FLOAT", {"default": -40.0, "min": -90.0, "max": 0.0, "step": 1.0}), "min_silence_len_ms": ("INT", {"default": 500, "min": 50, "max": 5000, "step": 50}),}}
+        return { "required": { 
+                        "audio": ("AUDIO", {"tooltip": "The audio clip from which to remove silent sections."}), 
+                        "silence_threshold_db": ("FLOAT", {"default": -40.0, "min": -90.0, "max": 0.0, "step": 1.0, "tooltip": "The volume level (in dB) below which audio is considered silent."}), 
+                        "min_silence_len_ms": ("INT", {"default": 500, "min": 50, "max": 5000, "step": 50, "tooltip": "The minimum duration (in milliseconds) of silence to be removed."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "remove_silence"
     CATEGORY = "AudioTools/Processing"
@@ -180,7 +191,11 @@ class RemoveSilence:
 class DeEsser:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "frequency_hz": ("INT", {"default": 7000, "min": 2000, "max": 12000, "step": 100}), "reduction_db": ("FLOAT", {"default": -12.0, "min": -36.0, "max": 0.0, "step": 0.5}), "q_factor": ("FLOAT", {"default": 3.0, "min": 0.5, "max": 10.0, "step": 0.1}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio to de-ess."}), 
+                        "frequency_hz": ("INT", {"default": 7000, "min": 2000, "max": 12000, "step": 100, "tooltip": "The center frequency of sibilance to target (typically 5-8 kHz)."}), 
+                        "reduction_db": ("FLOAT", {"default": -12.0, "min": -36.0, "max": 0.0, "step": 0.5, "tooltip": "The amount of gain reduction (in dB) to apply at the target frequency."}), 
+                        "q_factor": ("FLOAT", {"default": 3.0, "min": 0.5, "max": 10.0, "step": 0.1, "tooltip": "The width of the frequency band to affect. Higher Q is narrower."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "de_ess"
     CATEGORY = "AudioTools/Processing"
@@ -197,7 +212,9 @@ class DeEsser:
 class DePlosive:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "cutoff_hz": ("INT", {"default": 80, "min": 40, "max": 300, "step": 5}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio to de-plosive (low-cut)."}), 
+                        "cutoff_hz": ("INT", {"default": 80, "min": 40, "max": 300, "step": 5, "tooltip": "The cutoff frequency for the high-pass filter. Frequencies below this will be rolled off."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "de_plosive"
     CATEGORY = "AudioTools/Processing"
@@ -213,7 +230,11 @@ class DePlosive:
 class ParametricEQ:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "low_cut_hz": ("INT", {"default": 80, "min": 20, "max": 500, "step": 5}), "presence_boost_db": ("FLOAT", {"default": 0.0, "min": -12.0, "max": 12.0, "step": 0.5}), "air_boost_db": ("FLOAT", {"default": 0.0, "min": -12.0, "max": 12.0, "step": 0.5}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio to equalize."}), 
+                        "low_cut_hz": ("INT", {"default": 80, "min": 20, "max": 500, "step": 5, "tooltip": "Low-cut (high-pass) filter to remove rumble. 80-120Hz is common for voice."}), 
+                        "presence_boost_db": ("FLOAT", {"default": 0.0, "min": -12.0, "max": 12.0, "step": 0.5, "tooltip": "Boost/cut for vocal presence (around 4kHz)."}), 
+                        "air_boost_db": ("FLOAT", {"default": 0.0, "min": -12.0, "max": 12.0, "step": 0.5, "tooltip": "High-shelf boost/cut for 'air' and clarity (around 12kHz)."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "equalize"
     CATEGORY = "AudioTools/Processing"
@@ -233,7 +254,13 @@ class ParametricEQ:
 class VocalCompressor:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "threshold_db": ("FLOAT", {"default": -16.0, "min": -60.0, "max": 0.0, "step": 0.5}), "ratio": ("FLOAT", {"default": 4.0, "min": 1.0, "max": 20.0, "step": 0.1}), "attack_ms": ("FLOAT", {"default": 5.0, "min": 0.1, "max": 100.0, "step": 0.1}), "release_ms": ("FLOAT", {"default": 100.0, "min": 10.0, "max": 1000.0, "step": 5.0}), "makeup_gain_db": ("FLOAT", {"default": 4.0, "min": 0.0, "max": 24.0, "step": 0.5}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio to compress."}), 
+                        "threshold_db": ("FLOAT", {"default": -16.0, "min": -60.0, "max": 0.0, "step": 0.5, "tooltip": "The volume level (dB) at which the compressor starts working."}), 
+                        "ratio": ("FLOAT", {"default": 4.0, "min": 1.0, "max": 20.0, "step": 0.1, "tooltip": "The amount of gain reduction (e.g., 4.0 means a 4:1 ratio)."}), 
+                        "attack_ms": ("FLOAT", {"default": 5.0, "min": 0.1, "max": 100.0, "step": 0.1, "tooltip": "How quickly (in ms) the compressor reacts to loud sounds."}), 
+                        "release_ms": ("FLOAT", {"default": 100.0, "min": 10.0, "max": 1000.0, "step": 5.0, "tooltip": "How quickly (in ms) the compressor stops after the sound falls below the threshold."}), 
+                        "makeup_gain_db": ("FLOAT", {"default": 4.0, "min": 0.0, "max": 24.0, "step": 0.5, "tooltip": "Volume boost to apply after compression to make up for the reduced level."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "compress"
     CATEGORY = "AudioTools/Processing"
@@ -249,7 +276,13 @@ class VocalCompressor:
 class Reverb:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "room_size": ("FLOAT", {"default": 50.0, "min": 0.0, "max": 100.0, "step": 1.0}), "damping": ("FLOAT", {"default": 50.0, "min": 0.0, "max": 100.0, "step": 1.0}), "wet_level": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01}), "dry_level": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio to apply reverb to."}), 
+                        "room_size": ("FLOAT", {"default": 50.0, "min": 0.0, "max": 100.0, "step": 1.0, 
+                                                "tooltip": "The perceived size of the reverberant space (0-100)."}), 
+                                                "damping": ("FLOAT", {"default": 50.0, "min": 0.0, "max": 100.0, "step": 1.0, "tooltip": "How much the high frequencies are absorbed in the reverb tails (0-100)."}), 
+                                                "wet_level": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "The volume of the reverberated (wet) signal."}), 
+                                                "dry_level": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "The volume of the original (dry) signal."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "apply_reverb"
     CATEGORY = "L3/AudioTools/Effects"
@@ -265,7 +298,11 @@ class Reverb:
 class Delay:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "delay_ms": ("FLOAT", {"default": 500.0, "min": 1.0, "max": 5000.0, "step": 1.0}), "feedback": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 0.98, "step": 0.01}), "mix": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio to apply delay to."}), 
+                        "delay_ms": ("FLOAT", {"default": 500.0, "min": 1.0, "max": 5000.0, "step": 1.0, "tooltip": "The time (in milliseconds) between each echo."}), 
+                        "feedback": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 0.98, "step": 0.01, "tooltip": "How much of the delayed signal is fed back into the delay line, creating more echoes."}), 
+                        "mix": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "The balance between the original (dry) and delayed (wet) signal. 0.0 is all dry, 1.0 is all wet."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "apply_delay"
     CATEGORY = "L3/AudioTools/Effects"
@@ -291,7 +328,10 @@ class Delay:
 class PitchTime:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "pitch_semitones": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 24.0, "step": 0.1}), "tempo_factor": ("FLOAT", {"default": 1.0, "min": 0.5, "max": 2.0, "step": 0.01}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio to pitch shift or time stretch."}), 
+                        "pitch_semitones": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 24.0, "step": 0.1, "tooltip": "The number of semitones to shift the pitch up or down."}), 
+                        "tempo_factor": ("FLOAT", {"default": 1.0, "min": 0.5, "max": 2.0, "step": 0.01, "tooltip": "The factor by which to change the tempo. >1.0 is faster, <1.0 is slower."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "pitch_time"
     CATEGORY = "L3/AudioTools/Effects"
@@ -312,7 +352,10 @@ class PitchTime:
 class TrimAudio:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "trim_start_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1}), "trim_end_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio clip to trim."}), 
+                        "trim_start_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1, "tooltip": "Number of seconds to cut from the beginning of the audio."}), 
+                        "trim_end_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1, "tooltip": "Number of seconds to cut from the end of the audio."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "trim"
     CATEGORY = "AudioTools/Processing"
@@ -334,7 +377,9 @@ class TrimAudio:
 class ConcatenateAudio:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio_a": ("AUDIO",), "audio_b": ("AUDIO",),}}
+        return {"required": {
+                        "audio_a": ("AUDIO", {"tooltip": "The first audio clip (will be the beginning of the result)."}), 
+                        "audio_b": ("AUDIO", {"tooltip": "The second audio clip (will be appended to the end of the first)."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "concat"
     CATEGORY = "L3/AudioTools/Utility"
@@ -349,7 +394,9 @@ class ConcatenateAudio:
 class StereoPanner:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "pan": ("FLOAT", {"default": 0.0, "min": -1.0, "max": 1.0, "step": 0.01}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio to pan."}), 
+                        "pan": ("FLOAT", {"default": 0.0, "min": -1.0, "max": 1.0, "step": 0.01, "tooltip": "Stereo position. -1.0 is hard left, 1.0 is hard right, 0.0 is center."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "pan"
     CATEGORY = "L3/AudioTools/Utility"
@@ -370,7 +417,11 @@ class StereoPanner:
 class DeHum:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "hum_freq": (["60Hz (America)", "50Hz (Europe/Asia)"],), "reduction_db": ("FLOAT", {"default": -30.0, "min": -60.0, "max": 0.0, "step": 1.0}), "q_factor": ("FLOAT", {"default": 10.0, "min": 1.0, "max": 50.0, "step": 0.5}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio to de-hum."}), 
+                        "hum_freq": (["60Hz (America)", "50Hz (Europe/Asia)"], {"tooltip": "The fundamental frequency of the electrical hum to remove."}), 
+                        "reduction_db": ("FLOAT", {"default": -30.0, "min": -60.0, "max": 0.0, "step": 1.0, "tooltip": "The amount of gain reduction (dB) to apply to the hum frequency and its first harmonic."}), 
+                        "q_factor": ("FLOAT", {"default": 10.0, "min": 1.0, "max": 50.0, "step": 0.5, "tooltip": "The narrowness of the filter. A high Q value is needed to target only the hum."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "dehum"
     CATEGORY = "AudioTools/Processing"
@@ -390,7 +441,11 @@ class DeHum:
 class NoiseGate:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "threshold_db": ("FLOAT", {"default": -40.0, "min": -90.0, "max": 0.0, "step": 1.0}), "attack_ms": ("FLOAT", {"default": 10.0, "min": 1.0, "max": 100.0, "step": 1.0}), "release_ms": ("FLOAT", {"default": 100.0, "min": 10.0, "max": 1000.0, "step": 1.0}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio to apply the noise gate to."}), 
+                        "threshold_db": ("FLOAT", {"default": -40.0, "min": -90.0, "max": 0.0, "step": 1.0, "tooltip": "The volume level (dB) below which the gate will close and silence the audio."}), 
+                        "attack_ms": ("FLOAT", {"default": 10.0, "min": 1.0, "max": 100.0, "step": 1.0, "tooltip": "How quickly (in ms) the gate opens when the signal exceeds the threshold."}), 
+                        "release_ms": ("FLOAT", {"default": 100.0, "min": 10.0, "max": 1000.0, "step": 1.0, "tooltip": "How quickly (in ms) the gate closes after the signal falls below the threshold."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "gate"
     CATEGORY = "AudioTools/Processing"
@@ -419,7 +474,8 @@ class NoiseGate:
 class LoudnessMeter:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio clip to measure for loudness."}),}}
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("loudness_info",)
     FUNCTION = "measure"
@@ -435,7 +491,9 @@ class LoudnessMeter:
 class BPMDetector:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "fps": ("INT", {"default": 24, "min": 1, "max": 120}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio clip to detect the tempo from."}), 
+                        "fps": ("INT", {"default": 24, "min": 1, "max": 120, "tooltip": "The target frames per second to sync the beat events list with."}),}}
     RETURN_TYPES = ("STRING", "FLOAT")
     RETURN_NAMES = ("bpm_info", "beat_events")
     FUNCTION = "detect"
@@ -457,7 +515,10 @@ class BPMDetector:
 class AudioReactiveParameter:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "fps": ("INT", {"default": 24, "min": 1, "max": 120}), "smoothing": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),}}
+        return {"required": {
+                    "audio": ("AUDIO", {"tooltip": "The audio clip to analyze for its volume envelope."}), 
+                    "fps": ("INT", {"default": 24, "min": 1, "max": 120, "tooltip": "The target frames per second to sync the envelope list with."}), 
+                    "smoothing": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "Amount of smoothing to apply to the envelope. 0 is no smoothing, 1 is maximum smoothing."}),}}
     RETURN_TYPES = ("FLOAT",)
     RETURN_NAMES = ("envelope",)
     FUNCTION = "analyze"
@@ -480,7 +541,9 @@ class AudioReactiveParameter:
 class FadeIn:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "duration_seconds": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 60.0, "step": 0.1}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio to apply a fade-in to."}), 
+                        "duration_seconds": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 60.0, "step": 0.1, "tooltip": "The duration of the fade-in effect in seconds."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "fade"
     CATEGORY = "L3/AudioTools/Effects"
@@ -501,7 +564,9 @@ class FadeIn:
 class FadeOut:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "duration_seconds": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 60.0, "step": 0.1}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio to apply a fade-out to."}), 
+                        "duration_seconds": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 60.0, "step": 0.1, "tooltip": "The duration of the fade-out effect in seconds."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "fade"
     CATEGORY = "L3/AudioTools/Effects"
@@ -522,7 +587,10 @@ class FadeOut:
 class PadAudio:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",), "pad_start_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1}), "pad_end_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1}),}}
+        return {"required": {
+                        "audio": ("AUDIO", {"tooltip": "The audio clip to pad with silence."}), 
+                        "pad_start_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1, "tooltip": "Duration of silence to add to the beginning of the audio."}), 
+                        "pad_end_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1, "tooltip": "Duration of silence to add to the end of the audio."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "pad"
     CATEGORY = "L3/AudioTools/Utility"

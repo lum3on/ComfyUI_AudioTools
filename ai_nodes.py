@@ -31,7 +31,9 @@ class StemSeparator:
 
     @classmethod
     def INPUT_TYPES(s):
-        return { "required": { "audio": ("AUDIO",), "model_name": (s.MODELS,), } }
+        return { "required": { 
+                    "audio": ("AUDIO", {"tooltip": "The audio clip to be separated into stems."}), 
+                    "model_name": (s.MODELS, {"tooltip": "The Demucs model to use for separation. 'htdemucs_ft' is a good general-purpose choice."}), } }
 
     RETURN_TYPES = ("AUDIO", "AUDIO", "AUDIO", "AUDIO")
     RETURN_NAMES = ("vocals", "bass", "drums", "other")
@@ -67,7 +69,9 @@ class SpeechDenoise:
 
     @classmethod
     def INPUT_TYPES(s):
-        return { "required": { "audio": ("AUDIO",), "model_name": (s.MODELS, {"default": "htdemucs"}), } }
+        return { "required": { 
+                        "audio": ("AUDIO", {"tooltip": "The audio clip containing speech to be denoised."}), 
+                        "model_name": (s.MODELS, {"default": "htdemucs", "tooltip": "The Demucs model to use for isolating vocals. It will remove non-vocal sounds."}), } }
 
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "denoise"
@@ -103,11 +107,10 @@ class SpeechToTextWhisper:
     def INPUT_TYPES(s):
         return { 
             "required": { 
-                "audio": ("AUDIO",), 
-                "model_size": (s.MODELS, {"default": "base"}),
-                "language": (s.LANGUAGES, {"default": "Auto-Detect"}),
-                # --- FIX 2: Add a dropdown to explicitly set the task ---
-                "task": (["Transcribe", "Translate to English"], {"default": "Transcribe"}),
+                "audio": ("AUDIO", {"tooltip": "The audio clip to be transcribed."}), 
+                "model_size": (s.MODELS, {"default": "base", "tooltip": "The size of the Whisper model to use. Larger models are more accurate but slower and require more VRAM."}),
+                "language": (s.LANGUAGES, {"default": "Auto-Detect", "tooltip": "The language of the speech in the audio. 'Auto-Detect' will attempt to identify the language automatically."}),
+                "task": (["Transcribe", "Translate to English"], {"default": "Transcribe", "tooltip": "Choose whether to transcribe the audio in its original language or translate it to English."}),
             } 
         }
 

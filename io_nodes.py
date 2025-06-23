@@ -17,11 +17,11 @@ class LoadAudioBatch:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "directory_path": ("STRING", {"multiline": False, "default": ""}),
-                "file_pattern": ("STRING", {"multiline": False, "default": "*.wav"}),
-                "sort_order": (s.SORT_ORDER_CHOICES, {"default": "Alphabetical (A-Z)"}), # New input
-                "skip_first": ("INT", {"default": 0, "min": 0, "max": 10000, "step": 1}),
-                "load_cap": ("INT", {"default": -1, "min": -1, "max": 10000, "step": 1}),
+                "directory_path": ("STRING", {"multiline": False, "default": "", "tooltip": "The full path to the directory containing audio files."}),
+                "file_pattern": ("STRING", {"multiline": False, "default": "*.wav", "tooltip": "The pattern to match files (e.g., *.wav, *.mp3, audio_*.flac)."}),
+                "sort_order": (s.SORT_ORDER_CHOICES, {"default": "Alphabetical (A-Z)", "tooltip": "The order to sort files before loading."}),
+                "skip_first": ("INT", {"default": 0, "min": 0, "max": 10000, "step": 1, "tooltip": "Number of files to skip from the start of the sorted list."}),
+                "load_cap": ("INT", {"default": -1, "min": -1, "max": 10000, "step": 1, "tooltip": "Maximum number of files to load. Use -1 for no limit."}),
             }
         }
     RETURN_TYPES = ("AUDIO", "AUDIO_LIST", "STRING")
@@ -126,8 +126,8 @@ class GetAudioFromList:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "audio_list": ("AUDIO_LIST",),
-                "index": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                "audio_list": ("AUDIO_LIST", {"tooltip": "The list of audio clips from a batch loader."}),
+                "index": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff, "tooltip": "The index of the audio clip to retrieve from the list. Wraps around if the index is out of bounds."}),
             }
         }
     RETURN_TYPES = ("AUDIO",)
