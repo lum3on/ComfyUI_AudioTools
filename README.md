@@ -80,3 +80,8 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 -   `matplotlib`
 -   `librosa` (for advanced analysis)
 -   `pyloudnorm` (for LUFS measurement)
+
+---
+
+changes with Version 1.1.01 
+- added tooltips on hover to almost all in/outputs
