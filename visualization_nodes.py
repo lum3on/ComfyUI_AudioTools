@@ -8,7 +8,13 @@ import io
 class DisplayWaveform:
     @classmethod
     def INPUT_TYPES(s):
-        return { "required": { "audio": ("AUDIO",), "width": ("INT", {"default": 512, "min": 128, "max": 4096}), "height": ("INT", {"default": 256, "min": 128, "max": 4096}), "line_color": ("STRING", {"default": "#1f77b4"}), "bg_color": ("STRING", {"default": "#FFFFFF"}), "show_axis": ("BOOLEAN", {"default": True}),}}
+        return { "required": { 
+                    "audio": ("AUDIO", {"tooltip": "The audio clip(s) to visualize."}), 
+                    "width": ("INT", {"default": 512, "min": 128, "max": 4096, "tooltip": "The width of the output image in pixels."}), 
+                    "height": ("INT", {"default": 256, "min": 128, "max": 4096, "tooltip": "The height of the output image in pixels."}), 
+                    "line_color": ("STRING", {"default": "#1f77b4", "tooltip": "The color of the waveform line (hex code)."}), 
+                    "bg_color": ("STRING", {"default": "#FFFFFF", "tooltip": "The background color of the image (hex code)."}), 
+                    "show_axis": ("BOOLEAN", {"default": True, "tooltip": "Whether to display the time and amplitude axes."}),}}
     
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "generate_waveform_image"
@@ -69,7 +75,15 @@ class DisplayWaveform:
 class CompareWaveforms:
     @classmethod
     def INPUT_TYPES(s):
-        return { "required": { "audio_a": ("AUDIO",), "audio_b": ("AUDIO",), "width": ("INT", {"default": 512, "min": 128, "max": 4096}), "height": ("INT", {"default": 256, "min": 128, "max": 4096}), "color_a": ("STRING", {"default": "#1f77b4"}), "color_b": ("STRING", {"default": "#ff7f0e"}), "bg_color": ("STRING", {"default": "#FFFFFF"}), "show_axis": ("BOOLEAN", {"default": True}),}}
+        return { "required": { 
+                    "audio_a": ("AUDIO", {"tooltip": "The first audio clip (or batch) to compare."}), 
+                    "audio_b": ("AUDIO", {"tooltip": "The second audio clip (or batch) to compare."}), 
+                    "width": ("INT", {"default": 512, "min": 128, "max": 4096, "tooltip": "The width of the output image in pixels."}), 
+                    "height": ("INT", {"default": 256, "min": 128, "max": 4096, "tooltip": "The height of the output image in pixels."}), 
+                    "color_a": ("STRING", {"default": "#1f77b4", "tooltip": "The color for Audio A's waveform (hex code)."}), 
+                    "color_b": ("STRING", {"default": "#ff7f0e", "tooltip": "The color for Audio B's waveform (hex code)."}), 
+                    "bg_color": ("STRING", {"default": "#FFFFFF", "tooltip": "The background color of the image (hex code)."}), 
+                    "show_axis": ("BOOLEAN", {"default": True, "tooltip": "Whether to display the time and amplitude axes and a legend."}),}}
     
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "generate_comparison_image"
@@ -145,7 +159,8 @@ class CompareWaveforms:
 class ShowAudioInfo:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {"audio": ("AUDIO",),}}
+        return {"required": {
+                    "audio": ("AUDIO", {"tooltip": "The audio clip to display information about."}),}}
     
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("info",)
