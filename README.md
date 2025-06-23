@@ -65,7 +65,7 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 -   **Loudness Meter (LUFS)**: Measures perceived loudness to the EBU R 128 broadcast standard.
 -   **BPM Detector / Reactive**: Estimates tempo and outputs a list of `1.0`s on beat frames and `0.0`s otherwise, synced to a target `fps`.
 -   **Audio-Reactive Envelope**: Outputs the volume envelope of an audio clip as a frame-by-frame list of floats (0-1), synced to a target `fps`.
--   **Show Audio Info**: Displays technical details (sample rate, duration, batch size, etc.).
+-   **Show Audio Info**: Displays technical /details (sample rate, duration, batch size, etc.).
 
 ### Visualization Nodes
 -   **Display Waveform**: Generates an image of the audio's waveform.
@@ -82,6 +82,13 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 -   `pyloudnorm` (for LUFS measurement)
 
 ---
+<details>
+<summary>Changelog</summary>
 
-changes with Version 1.1.01 
+Version 1.1.01 
 - added tooltips on hover to almost all in/outputs
+
+Version 1.1.00
+- init
+
+</details>
