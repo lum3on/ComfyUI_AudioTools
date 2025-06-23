@@ -81,6 +81,12 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 -   `librosa` (for advanced analysis)
 -   `pyloudnorm` (for LUFS measurement)
 
+## License
+
+The code for this ComfyUI node pack is licensed under the **MIT License**. You can find the full license text in the [LICENSE](LICENSE) file.
+
+**Important**: This project relies on several third-party libraries and pre-trained AI models that have their own licenses. Notably, the **Demucs** models used by the `Stem Separator (AI)` and `Speech Denoise (AI)` nodes are licensed for **non-commercial use only**. Please see the [DISCLAIMER.md](DISCLAIMER.md) file for a more detailed breakdown of third-party licenses and your responsibilities when using this toolkit.
+
 ---
 <details>
 <summary>Changelog</summary>
