@@ -85,6 +85,8 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 <details>
 <summary>Changelog</summary>
 
+Recent Changes:
+
 **Version 1.1.01** 
 - added tooltips on hover to almost all in/outputs
 
