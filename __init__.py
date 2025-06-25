@@ -90,7 +90,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     # AI Nodes
     "AudioStemSeparate": "Stem Separator (AI)",
     "AudioSpeechDenoise": "Speech Denoise (AI)",
-    "AudioSpeechToTextWhisper": "Speech-to-Text (Whisper)",
+    "AudioSpeechToTextWhisper": "Speech-to-Text + SRT (Whisper)",
 
     # Analysis & Reactive Nodes
     "AudioLoudnessMeter": "Loudness Meter (LUFS)",
@@ -112,5 +112,5 @@ __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
 print("----------------------------------")
 print("### ComfyUI Audio Tools        ###")
 print("### Developed by [Lum3on]      ###")
-print("### Version 1.1.01             ###")
+print("### Version 1.1.05             ###")
 print("----------------------------------")

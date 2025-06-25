@@ -59,7 +59,7 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 ### AI Nodes
 -   **Stem Separator (AI)**: Splits music into `vocals`, `bass`, `drums`, and `other`.
 -   **Speech Denoise (AI)**: Isolates vocals to remove background noise.
--   **Speech-to-Text (Whisper)**: Transcribes audio to text.
+-   **Speech-to-Text + SRT (Whisper)**: Transcribes audio to text. Outputs both plain text and an SRT (SubRip Subtitle) formatted string with timestamps.
 
 ### Analysis & Reactive Nodes
 -   **Loudness Meter (LUFS)**: Measures perceived loudness to the EBU R 128 broadcast standard.
@@ -86,6 +86,10 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 <summary>Changelog</summary>
 
 Recent Changes:
+
+**Version 1.1.05** 
+- added srt output to the Speech-to-Text Node
+- fixed some edge case errors in the Speech-to-text Node
 
 **Version 1.1.01** 
 - added tooltips on hover to almost all in/outputs
