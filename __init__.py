@@ -3,7 +3,8 @@ from .processing_nodes import (AmplifyGain, NormalizeAudio, MixAudio, RemoveSile
                                Reverb, Delay, PitchTime, TrimAudio,
                                ConcatenateAudio, StereoPanner, DeHum, NoiseGate,
                                LoudnessMeter, BPMDetector, AudioReactiveParameter,
-                               FadeIn, FadeOut, PadAudio)
+                               FadeIn, FadeOut, PadAudio,
+                               StandardizeAudio) # _NEW: Import the new node class
 from .ai_nodes import StemSeparator, SpeechDenoise, SpeechToTextWhisper
 from .visualization_nodes import DisplayWaveform, CompareWaveforms, ShowAudioInfo # New import
 from .generation_nodes import TextToSpeechNode
@@ -16,6 +17,7 @@ NODE_CLASS_MAPPINGS = {
     # Processing Nodes
     "AudioAmplify": AmplifyGain,
     "AudioNormalize": NormalizeAudio,
+    "AudioStandardize": StandardizeAudio,
     "AudioRemoveSilence": RemoveSilence,
     "AudioDeEsser": DeEsser,
     "AudioDePlosive": DePlosive,
@@ -65,6 +67,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     # Processing Nodes
     "AudioAmplify": "Amplify / Gain",
     "AudioNormalize": "Normalize Audio",
+    "AudioStandardize": "Standardize Audio (Format/Channels)",
     "AudioRemoveSilence": "Remove Silence",
     "AudioDeEsser": "De-Esser",
     "AudioDePlosive": "De-Plosive (Low Cut)",

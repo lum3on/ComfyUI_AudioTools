@@ -89,6 +89,7 @@ Recent Changes:
 
 **Version 1.1.06** 
 - fixed compatibility of the Speech-to-text Node with https://github.com/niknah/ComfyUI-F5-TTS
+- added "Standardize Audio Format/Channels" Node to fix future compatibility issues
 
 **Version 1.1.05** 
 - added srt output to the Speech-to-Text Node

@@ -611,3 +611,50 @@ class PadAudio:
                 w_proc = torch.cat((w_proc, end_padding), dim=1)
             processed_list.append(w_proc)
         return ({"waveform": torch.stack(processed_list), "sample_rate": sr},)
+    
+class StandardizeAudio:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "audio": ("AUDIO", {"tooltip": "The audio to standardize."}),
+                "channel_layout": (["mono", "stereo"], {"default": "mono", "tooltip": "Convert audio to mono (single channel) or ensure it is stereo (two channels)."}),
+            }
+        }
+    
+    RETURN_TYPES = ("AUDIO",)
+    FUNCTION = "standardize"
+    CATEGORY = "AudioTools/Processing"
+
+    def standardize(self, audio: dict, channel_layout: str):
+        w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
+        
+        if w_batch.nelement() == 0:
+            return ({"waveform": torch.zeros((0, 1, 1)), "sample_rate": sample_rate},)
+
+        processed_list = []
+        # --- BATCH PROCESSING ---
+        for w in w_batch:
+            w_proc = w.clone()
+            
+            # 1. Standardize Data Type to float32
+            if w_proc.dtype != torch.float32:
+                print(f"ComfyAudio (Standardize): Converting waveform from {w_proc.dtype} to torch.float32.")
+                w_proc = w_proc.to(torch.float32)
+
+            # 2. Standardize Channel Layout
+            if channel_layout == "mono":
+                if w_proc.shape[0] > 1:
+                    print(f"ComfyAudio (Standardize): Converting audio to mono.")
+                    w_proc = torch.mean(w_proc, dim=0, keepdim=True)
+            elif channel_layout == "stereo":
+                if w_proc.shape[0] == 1:
+                    print(f"ComfyAudio (Standardize): Converting mono audio to stereo.")
+                    w_proc = torch.cat((w_proc, w_proc), dim=0)
+                elif w_proc.shape[0] > 2:
+                    print(f"ComfyAudio (Standardize): Warning - audio has more than 2 channels. Taking first 2 for stereo.")
+                    w_proc = w_proc[:2, :]
+
+            processed_list.append(w_proc)
+            
+        return ({"waveform": torch.stack(processed_list), "sample_rate": sample_rate},)
