@@ -87,6 +87,9 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 
 Recent Changes:
 
+**Version 1.1.06** 
+- fixed compatibility of the Speech-to-text Node with https://github.com/niknah/ComfyUI-F5-TTS
+
 **Version 1.1.05** 
 - added srt output to the Speech-to-Text Node
 - fixed some edge case errors in the Speech-to-text Node

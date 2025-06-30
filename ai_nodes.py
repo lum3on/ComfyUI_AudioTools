@@ -1,4 +1,4 @@
-# File: ai_nodes.py (With SRT Generation)
+# File: ai_nodes.py (With SRT Generation and dtype fix)
 
 import torch
 import numpy as np
@@ -300,7 +300,18 @@ class SpeechToTextWhisper:
         WHISPER_SR = 16000
         if sample_rate != WHISPER_SR:
             print(f"ComfyAudio: Resampling for Whisper from {sample_rate}Hz to {WHISPER_SR}Hz.")
-            resampler = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=WHISPER_SR)
+            
+            # --- FIX START ---
+            # Ensure the input waveform is float32. Some nodes might output float64, causing
+            # a dtype mismatch with the resampler's internal kernel on some torchaudio versions.
+            if waveform.dtype != torch.float32:
+                print(f"ComfyAudio: Whisper node converting waveform from {waveform.dtype} to torch.float32 for compatibility.")
+                waveform = waveform.to(torch.float32)
+            
+            # Create a resampler with a float32 kernel to match the waveform dtype.
+            resampler = torchaudio.transforms.Resample(orig_freq=sample_rate, new_freq=WHISPER_SR, dtype=torch.float32)
+            # --- FIX END ---
+
             waveform = resampler(waveform)
 
         if waveform.nelement() == 0:

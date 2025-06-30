@@ -112,5 +112,5 @@ __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
 print("----------------------------------")
 print("### ComfyUI Audio Tools        ###")
 print("### Developed by [Lum3on]      ###")
-print("### Version 1.1.05             ###")
+print("### Version 1.1.06             ###")
 print("----------------------------------")
