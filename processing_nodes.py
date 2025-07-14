@@ -285,7 +285,7 @@ class Reverb:
                                                 "dry_level": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "The volume of the original (dry) signal."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "apply_reverb"
-    CATEGORY = "L3/AudioTools/Effects"
+    CATEGORY = "AudioTools/Effects"
     def apply_reverb(self, audio: dict, room_size: float, damping: float, wet_level: float, dry_level: float):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -305,7 +305,7 @@ class Delay:
                         "mix": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "The balance between the original (dry) and delayed (wet) signal. 0.0 is all dry, 1.0 is all wet."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "apply_delay"
-    CATEGORY = "L3/AudioTools/Effects"
+    CATEGORY = "AudioTools/Effects"
     def apply_delay(self, audio: dict, delay_ms: float, feedback: float, mix: float):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -334,7 +334,7 @@ class PitchTime:
                         "tempo_factor": ("FLOAT", {"default": 1.0, "min": 0.5, "max": 2.0, "step": 0.01, "tooltip": "The factor by which to change the tempo. >1.0 is faster, <1.0 is slower."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "pitch_time"
-    CATEGORY = "L3/AudioTools/Effects"
+    CATEGORY = "AudioTools/Effects"
     def pitch_time(self, audio: dict, pitch_semitones: float, tempo_factor: float):
         # NOTE: Pitch/Time is very slow and would be even slower on a batch.
         # It's also likely to create variable lengths. Left as single-item processor.
@@ -382,7 +382,7 @@ class ConcatenateAudio:
                         "audio_b": ("AUDIO", {"tooltip": "The second audio clip (will be appended to the end of the first)."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "concat"
-    CATEGORY = "L3/AudioTools/Utility"
+    CATEGORY = "AudioTools/Utility"
     def concat(self, audio_a: dict, audio_b: dict):
         # NOTE: Concatenates the first item from each batch end-to-end.
         w_a, sr_a = audio_a["waveform"][0], audio_a["sample_rate"]
@@ -399,7 +399,7 @@ class StereoPanner:
                         "pan": ("FLOAT", {"default": 0.0, "min": -1.0, "max": 1.0, "step": 0.01, "tooltip": "Stereo position. -1.0 is hard left, 1.0 is hard right, 0.0 is center."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "pan"
-    CATEGORY = "L3/AudioTools/Utility"
+    CATEGORY = "AudioTools/Utility"
     def pan(self, audio: dict, pan: float):
         w_batch, sr = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -479,7 +479,7 @@ class LoudnessMeter:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("loudness_info",)
     FUNCTION = "measure"
-    CATEGORY = "L3/AudioTools/Analysis"
+    CATEGORY = "AudioTools/Analysis"
     def measure(self, audio: dict):
         w, sr = audio["waveform"][0], audio["sample_rate"]
         audio_np = w.cpu().numpy().T
@@ -497,7 +497,7 @@ class BPMDetector:
     RETURN_TYPES = ("STRING", "FLOAT")
     RETURN_NAMES = ("bpm_info", "beat_events")
     FUNCTION = "detect"
-    CATEGORY = "L3/AudioTools/Analysis"
+    CATEGORY = "AudioTools/Analysis"
     def detect(self, audio: dict, fps: int):
         w, sr = audio["waveform"][0], audio["sample_rate"]
         audio_mono = torch.mean(w, dim=0).cpu().numpy().astype(np.float32)
@@ -522,7 +522,7 @@ class AudioReactiveParameter:
     RETURN_TYPES = ("FLOAT",)
     RETURN_NAMES = ("envelope",)
     FUNCTION = "analyze"
-    CATEGORY = "L3/AudioTools/Analysis"
+    CATEGORY = "AudioTools/Analysis"
     def analyze(self, audio: dict, fps: int, smoothing: float):
         w, sr = audio["waveform"][0], audio["sample_rate"]
         audio_mono = torch.mean(w, dim=0).cpu().numpy()
@@ -546,7 +546,7 @@ class FadeIn:
                         "duration_seconds": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 60.0, "step": 0.1, "tooltip": "The duration of the fade-in effect in seconds."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "fade"
-    CATEGORY = "L3/AudioTools/Effects"
+    CATEGORY = "AudioTools/Effects"
     def fade(self, audio: dict, duration_seconds: float):
         w_batch, sr = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -569,7 +569,7 @@ class FadeOut:
                         "duration_seconds": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 60.0, "step": 0.1, "tooltip": "The duration of the fade-out effect in seconds."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "fade"
-    CATEGORY = "L3/AudioTools/Effects"
+    CATEGORY = "AudioTools/Effects"
     def fade(self, audio: dict, duration_seconds: float):
         w_batch, sr = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -593,7 +593,7 @@ class PadAudio:
                         "pad_end_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1, "tooltip": "Duration of silence to add to the end of the audio."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "pad"
-    CATEGORY = "L3/AudioTools/Utility"
+    CATEGORY = "AudioTools/Utility"
     def pad(self, audio: dict, pad_start_seconds: float, pad_end_seconds: float):
         w_batch, sr = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -602,7 +602,7 @@ class PadAudio:
             w_proc = w.clone()
             num_channels, total_samples = w_proc.shape
             if pad_start_seconds > 0:
-                pad_samples = int(pad_start_seconds * sr)
+                F = int(pad_start_seconds * sr)
                 start_padding = torch.zeros((num_channels, pad_samples), device=w_proc.device)
                 w_proc = torch.cat((start_padding, w_proc), dim=1)
             if pad_end_seconds > 0:

@@ -146,6 +146,8 @@ Converts text into spoken audio using your operating system's built-in text-to-s
 #### Concatenate Audio
 *Category: `AudioTools/Utility`*
 
+![Concatenate Audio](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Concatenate_Audio.jpg?raw=true)
+
 Joins two audio clips together end-to-end. The first clip from each input batch is used.
 
 | Parameter | Type | Description |
@@ -157,6 +159,8 @@ Joins two audio clips together end-to-end. The first clip from each input batch 
 #### Stereo Panner
 *Category: `AudioTools/Utility`*
 
+![Stereo Panner](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Stereo_Panner.jpg?raw=true)
+
 Positions a sound in the stereo (left/right) field. This is applied to all audio clips in a batch.
 
 | Parameter | Type | Description |
@@ -167,6 +171,8 @@ Positions a sound in the stereo (left/right) field. This is applied to all audio
 
 #### Pad With Silence
 *Category: `AudioTools/Utility`*
+
+![Pad With Silence](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Pad_With_Silence.jpg?raw=true)
 
 Adds a specified duration of silence to the beginning or end of audio. This is applied to all audio clips in a batch.
 
@@ -343,6 +349,8 @@ Evens out the dynamic range of an audio clip, making quiet parts louder and loud
 #### Reverb
 *Category: `AudioTools/Effects`*
 
+![Reverb](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Reverb.jpg?raw=true)
+
 Adds spatial reverberation to the audio, simulating the sound of a room or space.
 
 | Parameter | Type | Description |
@@ -357,6 +365,8 @@ Adds spatial reverberation to the audio, simulating the sound of a room or space
 #### Delay / Echo
 *Category: `AudioTools/Effects`*
 
+![Delay / Echo](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Delay___Echo.jpg?raw=true)
+
 Creates a repeating, decaying echo effect on the audio.
 
 | Parameter | Type | Description |
@@ -370,6 +380,8 @@ Creates a repeating, decaying echo effect on the audio.
 #### Fade In
 *Category: `AudioTools/Effects`*
 
+![Fade In](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Fade_In.jpg?raw=true)
+
 Applies a linear fade-in from silence to the start of the audio.
 
 | Parameter | Type | Description |
@@ -381,6 +393,8 @@ Applies a linear fade-in from silence to the start of the audio.
 #### Fade Out
 *Category: `AudioTools/Effects`*
 
+![Fade Out](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Fade_Out.jpg?raw=true)
+
 Applies a linear fade-out to silence at the end of the audio.
 
 | Parameter | Type | Description |
@@ -391,6 +405,8 @@ Applies a linear fade-out to silence at the end of the audio.
 
 #### Pitch Shift / Time Stretch
 *Category: `AudioTools/Effects`*
+
+![Pitch Shift / Time Stretch](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Pitch_Shift___Time_Stretch.jpg?raw=true)
 
 Changes the audio's pitch without changing its speed, and/or changes its speed without changing the pitch. (Note: This node is not batch-aware).
 
@@ -457,6 +473,8 @@ Transcribes audio to text using OpenAI's Whisper model. Can optionally generate 
 #### Loudness Meter (LUFS)
 *Category: `AudioTools/Analysis`*
 
+![Loudness Meter (LUFS)](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Loudness_Meter_LUFS.jpg?raw=true)
+
 Measures the perceived loudness of an audio clip according to the EBU R 128 broadcast standard and outputs the result as a string.
 
 | Parameter | Type | Description |
@@ -466,6 +484,8 @@ Measures the perceived loudness of an audio clip according to the EBU R 128 broa
 
 #### BPM Detector / Reactive
 *Category: `AudioTools/Analysis`*
+
+![BPM Detector / Reactive](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/BPM_Detector___Reactive.jpg?raw=true)
 
 Estimates the tempo (Beats Per Minute) of an audio clip and generates a frame-synced list of beat events.
 
@@ -478,6 +498,8 @@ Estimates the tempo (Beats Per Minute) of an audio clip and generates a frame-sy
 
 #### Audio-Reactive Envelope
 *Category: `AudioTools/Analysis`*
+
+![Audio-Reactive Envelope](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Audio-Reactive_Envelope.jpg?raw=true)
 
 Analyzes the volume envelope (RMS) of an audio clip and outputs it as a frame-by-frame list of floats, perfect for driving animations.
 
