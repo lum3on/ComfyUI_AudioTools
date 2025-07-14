@@ -124,7 +124,7 @@ Converts audio to a standard format (mono or stereo) and data type to fix compat
 | **(Input)** `channel_layout` | `COMBO` | Convert audio to mono (single channel) or ensure it is stereo (two channels). |
 | **(Output)** `AUDIO` | `AUDIO` | The standardized audio. |
 
-### Generation Nodes
+### 💬 Generation Nodes
 
 #### Text to Speech
 *Category: `AudioTools/Generation`*
