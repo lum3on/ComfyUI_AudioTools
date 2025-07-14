@@ -7,52 +7,52 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 ## Node Glossary
 
 ### I/O & Batch Nodes
-*   [Load Audio Batch (Path)](#📂-load-audio-batch-path)
-*   [Get Audio From List](#📂-get-audio-from-list)
-*   [Standardize Audio (Format/Channels)](#📂-standardize-audio-formatchannels)
+*   [Load Audio Batch (Path)](#load-audio-batch-path)
+*   [Get Audio From List](#get-audio-from-list)
+*   [Standardize Audio (Format/Channels)](#standardize-audio-formatchannels)
 
 ### Generation Nodes
-*   [Text to Speech](#💬-text-to-speech)
+*   [Text to Speech](#text-to-speech)
 
 ### Utility Nodes
-*   [Concatenate Audio](#-concatenate-audio)
-*   [Stereo Panner](#-stereo-panner)
-*   [Pad With Silence](#-pad-with-silence)
+*   [Concatenate Audio](#concatenate-audio)
+*   [Stereo Panner](#stereo-panner)
+*   [Pad With Silence](#pad-with-silence)
 
 ### Processing & Repair Nodes
-*   [Amplify / Gain](#-amplify--gain)
-*   [Normalize Audio](#-normalize-audio)
-*   [Mix Audio Tracks](#-mix-audio-tracks)
-*   [Trim Audio](#-trim-audio)
-*   [Remove Silence](#-remove-silence)
-*   [Noise Gate](#-noise-gate)
-*   [De-Esser](#-de-esser)
-*   [De-Plosive (Low Cut)](#-de-plosive-low-cut)
-*   [De-Hum (50/60Hz)](#-de-hum-5060hz)
-*   [Parametric EQ for Voice](#-parametric-eq-for-voice)
-*   [Vocal Compressor](#-vocal-compressor)
+*   [Amplify / Gain](#amplify--gain)
+*   [Normalize Audio](#normalize-audio)
+*   [Mix Audio Tracks](#mix-audio-tracks)
+*   [Trim Audio](#trim-audio)
+*   [Remove Silence](#remove-silence)
+*   [Noise Gate](#noise-gate)
+*   [De-Esser](#de-esser)
+*   [De-Plosive (Low Cut)](#de-plosive-low-cut)
+*   [De-Hum (50/60Hz)](#de-hum-5060hz)
+*   [Parametric EQ for Voice](#parametric-eq-for-voice)
+*   [Vocal Compressor](#vocal-compressor)
 
 ### Effects Nodes
-*   [Reverb](#-reverb)
-*   [Delay / Echo](#-delay--echo)
-*   [Fade In](#-fade-in)
-*   [Fade Out](#-fade-out)
-*   [Pitch Shift / Time Stretch](#-pitch-shift--time-stretch)
+*   [Reverb](#reverb)
+*   [Delay / Echo](#delay--echo)
+*   [Fade In](#fade-in)
+*   [Fade Out](#fade-out)
+*   [Pitch Shift / Time Stretch](#pitch-shift--time-stretch)
 
 ### AI Nodes
-*   [Stem Separator (AI)](#-stem-separator-ai)
-*   [Speech Denoise (AI)](#-speech-denoise-ai)
-*   [Speech-to-Text + SRT (Whisper)](#-speech-to-text--srt-whisper)
+*   [Stem Separator (AI)](#stem-separator-ai)
+*   [Speech Denoise (AI)](#speech-denoise-ai)
+*   [Speech-to-Text + SRT (Whisper)](#speech-to-text--srt-whisper)
 
 ### Analysis & Reactive Nodes
-*   [Loudness Meter (LUFS)](#-loudness-meter-lufs)
-*   [BPM Detector / Reactive](#-bpm-detector--reactive)
-*   [Audio-Reactive Envelope](#-audio-reactive-envelope)
-*   [Show Audio Info](#-show-audio-info)
+*   [Loudness Meter (LUFS)](#loudness-meter-lufs)
+*   [BPM Detector / Reactive](#bpm-detector--reactive)
+*   [Audio-Reactive Envelope](#audio-reactive-envelope)
+*   [Show Audio Info](#show-audio-info)
 
 ### Visualization Nodes
-*   [Display Waveform](#-display-waveform)
-*   [Compare Waveforms](#-compare-waveforms)
+*   [Display Waveform](#display-waveform)
+*   [Compare Waveforms](#compare-waveforms)
 
 ---
 
@@ -80,7 +80,7 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 
 ### I/O & Batch Nodes
 
-#### 📂 Load Audio Batch (Path)
+#### Load Audio Batch (Path)
 *Category: `AudioTools/IO`*
 
 ![Load Audio Batch (Path)](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Load_Audio_Batch_Path.jpg?raw=true)
@@ -98,7 +98,7 @@ Loads all audio files from a folder path that match a pattern (e.g., `*.wav`). C
 | **(Output)** `audio_list` | `AUDIO_LIST` | A list where each item is a separate, unpadded `AUDIO` clip. |
 | **(Output)** `filenames` | `STRING` | A list of the filenames (string) that were successfully loaded. |
 
-#### 📂 Get Audio From List
+#### Get Audio From List
 *Category: `AudioTools/IO`*
 
 ![Get Audio From List](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Get_Audio_From_List.jpg?raw=true)
@@ -111,7 +111,7 @@ Retrieves a single audio clip from the `audio_list` output of the batch loader, 
 | **(Input)** `index` | `INT` | The index of the audio clip to retrieve from the list. Wraps around if the index is out of bounds. |
 | **(Output)** `AUDIO` | `AUDIO` | The single audio clip selected from the list. |
 
-#### 📂 Standardize Audio (Format/Channels)
+#### Standardize Audio (Format/Channels)
 *Category: `AudioTools/Processing`*
 
 ![Standardize Audio (Format/Channels)](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Standardize_Audio_Format_Channels.jpg?raw=true)
@@ -126,7 +126,7 @@ Converts audio to a standard format (mono or stereo) and data type to fix compat
 
 ### Generation Nodes
 
-#### 💬 Text to Speech
+#### Text to Speech
 *Category: `AudioTools/Generation`*
 
 ![Text to Speech](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Text_to_Speech.jpg?raw=true)
@@ -143,7 +143,7 @@ Converts text into spoken audio using your operating system's built-in text-to-s
 
 ### Utility Nodes
 
-#### 🛠️ Concatenate Audio
+#### Concatenate Audio
 *Category: `AudioTools/Utility`*
 
 Joins two audio clips together end-to-end. The first clip from each input batch is used.
@@ -154,7 +154,7 @@ Joins two audio clips together end-to-end. The first clip from each input batch 
 | **(Input)** `audio_b` | `AUDIO` | The second audio clip (will be appended to the end of the first). |
 | **(Output)** `AUDIO` | `AUDIO` | The new, combined audio clip. |
 
-#### 🛠️ Stereo Panner
+#### Stereo Panner
 *Category: `AudioTools/Utility`*
 
 Positions a sound in the stereo (left/right) field. This is applied to all audio clips in a batch.
@@ -165,7 +165,7 @@ Positions a sound in the stereo (left/right) field. This is applied to all audio
 | **(Input)** `pan` | `FLOAT` | Stereo position. -1.0 is hard left, 1.0 is hard right, 0.0 is center. |
 | **(Output)** `AUDIO` | `AUDIO` | The panned audio. Mono inputs are converted to stereo. |
 
-#### 🛠️ Pad With Silence
+#### Pad With Silence
 *Category: `AudioTools/Utility`*
 
 Adds a specified duration of silence to the beginning or end of audio. This is applied to all audio clips in a batch.
@@ -179,7 +179,7 @@ Adds a specified duration of silence to the beginning or end of audio. This is a
 
 ### Processing & Repair Nodes
 
-#### 🔧 Amplify / Gain
+#### Amplify / Gain
 *Category: `AudioTools/Processing`*
 
 ![Amplify / Gain](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Amplify___Gain.jpg?raw=true)
@@ -192,7 +192,7 @@ Adjusts the volume of the audio by a specified decibel (dB) value.
 | **(Input)** `gain_db` | `FLOAT` | Amount of gain in decibels (dB) to apply. Positive values amplify, negative values attenuate. |
 | **(Output)** `AUDIO` | `AUDIO` | The amplified audio. |
 
-#### 🔧 Normalize Audio
+#### Normalize Audio
 *Category: `AudioTools/Processing`*
 
 ![Normalize Audio](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Normalize_Audio.jpg?raw=true)
@@ -205,7 +205,7 @@ Normalizes the peak volume of the audio to a target dB level, maximizing loudnes
 | **(Input)** `target_level_db` | `FLOAT` | The target peak volume in decibels (dB). A value of 0.0 is maximum, but -1.0 is a common target to avoid clipping. |
 | **(Output)** `AUDIO` | `AUDIO` | The normalized audio. |
 
-#### 🔧 Mix Audio Tracks
+#### Mix Audio Tracks
 *Category: `AudioTools/Processing`*
 
 ![Mix Audio Tracks](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Mix_Audio_Tracks.jpg?raw=true)
@@ -220,7 +220,7 @@ Combines two audio tracks into one. The first clip from each input batch is used
 | **(Input)** `gain_2_db` | `FLOAT` | Gain in dB for the second audio track. |
 | **(Output)** `AUDIO` | `AUDIO` | The mixed audio. |
 
-#### 🔧 Trim Audio
+#### Trim Audio
 *Category: `AudioTools/Processing`*
 
 ![Trim Audio](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Trim_Audio.jpg?raw=true)
@@ -234,7 +234,7 @@ Cuts a specified number of seconds from the beginning or end of an audio clip. (
 | **(Input)** `trim_end_seconds` | `FLOAT` | Number of seconds to cut from the end of the audio. |
 | **(Output)** `AUDIO` | `AUDIO` | The trimmed audio clip. |
 
-#### 🔧 Remove Silence
+#### Remove Silence
 *Category: `AudioTools/Processing`*
 
 ![Remove Silence](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Remove_Silence.jpg?raw=true)
@@ -248,7 +248,7 @@ Intelligently analyzes and trims silent sections from an audio clip. (Note: This
 | **(Input)** `min_silence_len_ms` | `INT` | The minimum duration (in milliseconds) of silence to be removed. |
 | **(Output)** `AUDIO` | `AUDIO` | The audio with silent sections removed. |
 
-#### 🔧 Noise Gate
+#### Noise Gate
 *Category: `AudioTools/Processing`*
 
 ![Noise Gate](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Noise_Gate.jpg?raw=true)
@@ -263,7 +263,7 @@ Silences audio that falls below a specified volume threshold, useful for removin
 | **(Input)** `release_ms` | `FLOAT` | How quickly (in ms) the gate closes after the signal falls below the threshold. |
 | **(Output)** `AUDIO` | `AUDIO` | The gated audio. |
 
-#### 🔧 De-Esser
+#### De-Esser
 *Category: `AudioTools/Processing`*
 
 ![De-Esser](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/De-Esser.jpg?raw=true)
@@ -278,7 +278,7 @@ Reduces harsh "s" sounds (sibilance) in voice recordings by applying a narrow-ba
 | **(Input)** `q_factor` | `FLOAT` | The width of the frequency band to affect. Higher Q is narrower. |
 | **(Output)** `AUDIO` | `AUDIO` | The de-essed audio. |
 
-#### 🔧 De-Plosive (Low Cut)
+#### De-Plosive (Low Cut)
 *Category: `AudioTools/Processing`*
 
 ![De-Plosive (Low Cut)](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/De-Plosive_Low_Cut.jpg?raw=true)
@@ -291,7 +291,7 @@ Reduces low-frequency pops ("plosives") caused by air hitting the microphone (e.
 | **(Input)** `cutoff_hz` | `INT` | The cutoff frequency for the high-pass filter. Frequencies below this will be rolled off. |
 | **(Output)** `AUDIO` | `AUDIO` | The filtered audio. |
 
-#### 🔧 De-Hum (50/60Hz)
+#### De-Hum (50/60Hz)
 *Category: `AudioTools/Processing`*
 
 ![De-Hum (50/60Hz)](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/De-Hum_50_60Hz.jpg?raw=true)
@@ -306,7 +306,7 @@ Removes electrical power line hum by applying very narrow notch filters at the f
 | **(Input)** `q_factor` | `FLOAT` | The narrowness of the filter. A high Q value is needed to target only the hum. |
 | **(Output)** `AUDIO` | `AUDIO` | The de-hummed audio. |
 
-#### 🔧 Parametric EQ for Voice
+#### Parametric EQ for Voice
 *Category: `AudioTools/Processing`*
 
 ![Parametric EQ for Voice](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Parametric_EQ_for_Voice.jpg?raw=true)
@@ -321,7 +321,7 @@ A 3-band equalizer specifically tuned for enhancing vocal clarity, featuring a l
 | **(Input)** `air_boost_db` | `FLOAT` | High-shelf boost/cut for 'air' and clarity (around 12kHz). |
 | **(Output)** `AUDIO` | `AUDIO` | The equalized audio. |
 
-#### 🔧 Vocal Compressor
+#### Vocal Compressor
 *Category: `AudioTools/Processing`*
 
 ![Vocal Compressor](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Vocal_Compressor.jpg?raw=true)
@@ -340,7 +340,7 @@ Evens out the dynamic range of an audio clip, making quiet parts louder and loud
 
 ### Effects Nodes
 
-#### ✨ Reverb
+#### Reverb
 *Category: `AudioTools/Effects`*
 
 Adds spatial reverberation to the audio, simulating the sound of a room or space.
@@ -354,7 +354,7 @@ Adds spatial reverberation to the audio, simulating the sound of a room or space
 | **(Input)** `dry_level` | `FLOAT` | The volume of the original (dry) signal. |
 | **(Output)** `AUDIO` | `AUDIO` | The reverberated audio. |
 
-#### ✨ Delay / Echo
+#### Delay / Echo
 *Category: `AudioTools/Effects`*
 
 Creates a repeating, decaying echo effect on the audio.
@@ -367,7 +367,7 @@ Creates a repeating, decaying echo effect on the audio.
 | **(Input)** `mix` | `FLOAT` | The balance between the original (dry) and delayed (wet) signal. 0.0 is all dry, 1.0 is all wet. |
 | **(Output)** `AUDIO` | `AUDIO` | The audio with the delay effect. |
 
-#### ✨ Fade In
+#### Fade In
 *Category: `AudioTools/Effects`*
 
 Applies a linear fade-in from silence to the start of the audio.
@@ -378,7 +378,7 @@ Applies a linear fade-in from silence to the start of the audio.
 | **(Input)** `duration_seconds` | `FLOAT` | The duration of the fade-in effect in seconds. |
 | **(Output)** `AUDIO` | `AUDIO` | The audio with the fade-in applied. |
 
-#### ✨ Fade Out
+#### Fade Out
 *Category: `AudioTools/Effects`*
 
 Applies a linear fade-out to silence at the end of the audio.
@@ -389,7 +389,7 @@ Applies a linear fade-out to silence at the end of the audio.
 | **(Input)** `duration_seconds` | `FLOAT` | The duration of the fade-out effect in seconds. |
 | **(Output)** `AUDIO` | `AUDIO` | The audio with the fade-out applied. |
 
-#### ✨ Pitch Shift / Time Stretch
+#### Pitch Shift / Time Stretch
 *Category: `AudioTools/Effects`*
 
 Changes the audio's pitch without changing its speed, and/or changes its speed without changing the pitch. (Note: This node is not batch-aware).
@@ -403,7 +403,7 @@ Changes the audio's pitch without changing its speed, and/or changes its speed w
 
 ### AI Nodes
 
-#### 🧠 Stem Separator (AI)
+#### Stem Separator (AI)
 *Category: `AudioTools/AI`*
 
 ![Stem Separator (AI)](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Stem_Separator_AI.jpg?raw=true)
@@ -419,7 +419,7 @@ Uses the Demucs AI model to split a music track into its core components: vocals
 | **(Output)** `drums` | `AUDIO` | The isolated drum track. |
 | **(Output)** `other` | `AUDIO` | All other musical elements combined. |
 
-#### 🧠 Speech Denoise (AI)
+#### Speech Denoise (AI)
 *Category: `AudioTools/AI`*
 
 ![Speech Denoise (AI)](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Speech_Denoise_AI.jpg?raw=true)
@@ -432,7 +432,7 @@ Uses the Demucs AI model to isolate vocals from a recording, effectively removin
 | **(Input)** `model_name` | `COMBO` | The Demucs model to use for isolating vocals. It will remove non-vocal sounds. |
 | **(Output)** `AUDIO` | `AUDIO` | The denoised audio containing only the vocal signal. |
 
-#### 🧠 Speech-to-Text + SRT (Whisper)
+#### Speech-to-Text + SRT (Whisper)
 *Category: `AudioTools/AI`*
 
 ![Speech-to-Text + SRT (Whisper)](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Speech-to-Text_SRT_Whisper.jpg?raw=true)
@@ -454,7 +454,7 @@ Transcribes audio to text using OpenAI's Whisper model. Can optionally generate 
 
 ### Analysis & Reactive Nodes
 
-#### 📈 Loudness Meter (LUFS)
+#### Loudness Meter (LUFS)
 *Category: `AudioTools/Analysis`*
 
 Measures the perceived loudness of an audio clip according to the EBU R 128 broadcast standard and outputs the result as a string.
@@ -464,7 +464,7 @@ Measures the perceived loudness of an audio clip according to the EBU R 128 broa
 | **(Input)** `audio` | `AUDIO` | The audio clip to measure for loudness. |
 | **(Output)** `loudness_info` | `STRING` | A text string containing the measured integrated loudness in LUFS. |
 
-#### 📈 BPM Detector / Reactive
+#### BPM Detector / Reactive
 *Category: `AudioTools/Analysis`*
 
 Estimates the tempo (Beats Per Minute) of an audio clip and generates a frame-synced list of beat events.
@@ -476,7 +476,7 @@ Estimates the tempo (Beats Per Minute) of an audio clip and generates a frame-sy
 | **(Output)** `bpm_info` | `STRING` | A text string with the estimated BPM. |
 | **(Output)** `beat_events` | `FLOAT` | A list of floats, with `1.0` on frames that land on a beat and `0.0` otherwise. |
 
-#### 📈 Audio-Reactive Envelope
+#### Audio-Reactive Envelope
 *Category: `AudioTools/Analysis`*
 
 Analyzes the volume envelope (RMS) of an audio clip and outputs it as a frame-by-frame list of floats, perfect for driving animations.
@@ -488,7 +488,7 @@ Analyzes the volume envelope (RMS) of an audio clip and outputs it as a frame-by
 | **(Input)** `smoothing` | `FLOAT` | Amount of smoothing to apply to the envelope. 0 is no smoothing, 1 is maximum smoothing. |
 | **(Output)** `envelope` | `FLOAT` | A list of floats (normalized 0-1) representing the audio's volume for each frame. |
 
-#### 📈 Show Audio Info
+#### Show Audio Info
 *Category: `AudioTools/Visualization`*
 
 ![Show Audio Info](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Show_Audio_Info.jpg?raw=true)
@@ -502,7 +502,7 @@ An output node that displays technical details about an audio clip or batch, suc
 
 ### Visualization Nodes
 
-#### 📊 Display Waveform
+#### Display Waveform
 *Category: `AudioTools/Visualization`*
 
 ![Display Waveform](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Display_Waveform.jpg?raw=true)
@@ -519,7 +519,7 @@ Generates and displays an image of the audio's waveform. This node is batch-awar
 | **(Input)** `show_axis` | `BOOLEAN` | Whether to display the time and amplitude axes. |
 | **(Output)** `IMAGE` | `IMAGE` | An image (or batch of images) of the waveform. |
 
-#### 📊 Compare Waveforms
+#### Compare Waveforms
 *Category: `AudioTools/Visualization`*
 
 ![Compare Waveforms](https://github.com/lum3on/ComfyUI_AudioTools/blob/main/readme/Compare_Waveforms.jpg?raw=true)
