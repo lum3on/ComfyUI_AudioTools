@@ -78,7 +78,7 @@ This toolkit is designed for a wide range of audio tasks, from podcast enhanceme
 
 ## Node Reference
 
-### I/O & Batch Nodes
+### 📂 I/O & Batch Nodes
 
 #### Load Audio Batch (Path)
 *Category: `AudioTools/IO`*
@@ -141,7 +141,7 @@ Converts text into spoken audio using your operating system's built-in text-to-s
 | **(Input)** `volume` | `FLOAT` | The volume of the generated audio (0.0 to 1.0). |
 | **(Output)** `AUDIO` | `AUDIO` | The generated spoken audio clip. |
 
-### Utility Nodes
+### 🛠️ Utility Nodes
 
 #### Concatenate Audio
 *Category: `AudioTools/Utility`*
@@ -338,7 +338,7 @@ Evens out the dynamic range of an audio clip, making quiet parts louder and loud
 | **(Input)** `makeup_gain_db` | `FLOAT` | Volume boost to apply after compression to make up for the reduced level. |
 | **(Output)** `AUDIO` | `AUDIO` | The compressed audio. |
 
-### Effects Nodes
+### ✨ Effects Nodes
 
 #### Reverb
 *Category: `AudioTools/Effects`*
@@ -401,7 +401,7 @@ Changes the audio's pitch without changing its speed, and/or changes its speed w
 | **(Input)** `tempo_factor` | `FLOAT` | The factor by which to change the tempo. >1.0 is faster, <1.0 is slower. |
 | **(Output)** `AUDIO` | `AUDIO` | The processed audio. |
 
-### AI Nodes
+### 🧠 AI Nodes
 
 #### Stem Separator (AI)
 *Category: `AudioTools/AI`*
@@ -452,7 +452,7 @@ Transcribes audio to text using OpenAI's Whisper model. Can optionally generate 
 | **(Output)** `text` | `STRING` | The transcribed text as a single string. |
 | **(Output)** `srt_text` | `STRING` | The generated SRT subtitle string with timestamps. Empty if `generate_srt` is disabled. |
 
-### Analysis & Reactive Nodes
+### 📈 Analysis & Reactive Nodes
 
 #### Loudness Meter (LUFS)
 *Category: `AudioTools/Analysis`*
