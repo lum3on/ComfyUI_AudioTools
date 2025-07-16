@@ -97,7 +97,7 @@ class AmplifyGain:
                         "gain_db": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 24.0, "step": 0.1, "tooltip": "Amount of gain in decibels (dB) to apply. Positive values amplify, negative values attenuate."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "apply_gain"
-    CATEGORY = "AudioTools/Processing"
+    CATEGORY = "⚪Lum3on/AudioTools/Processing"
     def apply_gain(self, audio: dict, gain_db: float):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -115,7 +115,7 @@ class NormalizeAudio:
                         "target_level_db": ("FLOAT", {"default": -1.0, "min": -12.0, "max": 0.0, "step": 0.1, "tooltip": "The target peak volume in decibels (dB). A value of 0.0 is maximum, but -1.0 is a common target to avoid clipping."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "normalize"
-    CATEGORY = "AudioTools/Processing"
+    CATEGORY = "⚪Lum3on/AudioTools/Processing"
     def normalize(self, audio: dict, target_level_db: float):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -139,7 +139,7 @@ class MixAudio:
                         "gain_2_db": ("FLOAT", {"default": 0.0, "min": -24.0, "max": 6.0, "step": 0.1, "tooltip": "Gain in dB for the second audio track."}), } }
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "mix"
-    CATEGORY = "AudioTools/Processing"
+    CATEGORY = "⚪Lum3on/AudioTools/Processing"
     def mix(self, audio_1: dict, audio_2: dict, gain_1_db: float, gain_2_db: float):
         w1, sr1 = audio_1["waveform"][0], audio_1["sample_rate"]
         w2, sr2 = audio_2["waveform"][0], audio_2["sample_rate"]
@@ -160,7 +160,7 @@ class RemoveSilence:
                         "min_silence_len_ms": ("INT", {"default": 500, "min": 50, "max": 5000, "step": 50, "tooltip": "The minimum duration (in milliseconds) of silence to be removed."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "remove_silence"
-    CATEGORY = "AudioTools/Processing"
+    CATEGORY = "⚪Lum3on/AudioTools/Processing"
     def remove_silence(self, audio: dict, silence_threshold_db: float, min_silence_len_ms: int):
         # NOTE: This is a complex operation. Batch processing this node could lead to
         # highly variable lengths, making re-batching difficult. It is left as a
@@ -198,7 +198,7 @@ class DeEsser:
                         "q_factor": ("FLOAT", {"default": 3.0, "min": 0.5, "max": 10.0, "step": 0.1, "tooltip": "The width of the frequency band to affect. Higher Q is narrower."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "de_ess"
-    CATEGORY = "AudioTools/Processing"
+    CATEGORY = "⚪Lum3on/AudioTools/Processing"
     def de_ess(self, audio: dict, frequency_hz: int, reduction_db: float, q_factor: float):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -217,7 +217,7 @@ class DePlosive:
                         "cutoff_hz": ("INT", {"default": 80, "min": 40, "max": 300, "step": 5, "tooltip": "The cutoff frequency for the high-pass filter. Frequencies below this will be rolled off."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "de_plosive"
-    CATEGORY = "AudioTools/Processing"
+    CATEGORY = "⚪Lum3on/AudioTools/Processing"
     def de_plosive(self, audio: dict, cutoff_hz: int):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -237,7 +237,7 @@ class ParametricEQ:
                         "air_boost_db": ("FLOAT", {"default": 0.0, "min": -12.0, "max": 12.0, "step": 0.5, "tooltip": "High-shelf boost/cut for 'air' and clarity (around 12kHz)."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "equalize"
-    CATEGORY = "AudioTools/Processing"
+    CATEGORY = "⚪Lum3on/AudioTools/Processing"
     def equalize(self, audio: dict, low_cut_hz: int, presence_boost_db: float, air_boost_db: float):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -263,7 +263,7 @@ class VocalCompressor:
                         "makeup_gain_db": ("FLOAT", {"default": 4.0, "min": 0.0, "max": 24.0, "step": 0.5, "tooltip": "Volume boost to apply after compression to make up for the reduced level."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "compress"
-    CATEGORY = "AudioTools/Processing"
+    CATEGORY = "⚪Lum3on/AudioTools/Processing"
     def compress(self, audio: dict, threshold_db: float, ratio: float, attack_ms: float, release_ms: float, makeup_gain_db: float):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -285,7 +285,7 @@ class Reverb:
                                                 "dry_level": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "The volume of the original (dry) signal."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "apply_reverb"
-    CATEGORY = "AudioTools/Effects"
+    CATEGORY = "⚪Lum3on/AudioTools/Effects"
     def apply_reverb(self, audio: dict, room_size: float, damping: float, wet_level: float, dry_level: float):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -305,7 +305,7 @@ class Delay:
                         "mix": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "The balance between the original (dry) and delayed (wet) signal. 0.0 is all dry, 1.0 is all wet."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "apply_delay"
-    CATEGORY = "AudioTools/Effects"
+    CATEGORY = "⚪Lum3on/AudioTools/Effects"
     def apply_delay(self, audio: dict, delay_ms: float, feedback: float, mix: float):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -334,7 +334,7 @@ class PitchTime:
                         "tempo_factor": ("FLOAT", {"default": 1.0, "min": 0.5, "max": 2.0, "step": 0.01, "tooltip": "The factor by which to change the tempo. >1.0 is faster, <1.0 is slower."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "pitch_time"
-    CATEGORY = "AudioTools/Effects"
+    CATEGORY = "⚪Lum3on/AudioTools/Effects"
     def pitch_time(self, audio: dict, pitch_semitones: float, tempo_factor: float):
         # NOTE: Pitch/Time is very slow and would be even slower on a batch.
         # It's also likely to create variable lengths. Left as single-item processor.
@@ -358,7 +358,7 @@ class TrimAudio:
                         "trim_end_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1, "tooltip": "Number of seconds to cut from the end of the audio."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "trim"
-    CATEGORY = "AudioTools/Processing"
+    CATEGORY = "⚪Lum3on/AudioTools/Processing"
     def trim(self, audio: dict, trim_start_seconds: float, trim_end_seconds: float):
         # NOTE: Trimming a batch would result in uneven lengths.
         # This node is designed to operate on a single audio clip.
@@ -382,7 +382,7 @@ class ConcatenateAudio:
                         "audio_b": ("AUDIO", {"tooltip": "The second audio clip (will be appended to the end of the first)."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "concat"
-    CATEGORY = "AudioTools/Utility"
+    CATEGORY = "⚪Lum3on/AudioTools/Utility"
     def concat(self, audio_a: dict, audio_b: dict):
         # NOTE: Concatenates the first item from each batch end-to-end.
         w_a, sr_a = audio_a["waveform"][0], audio_a["sample_rate"]
@@ -399,7 +399,7 @@ class StereoPanner:
                         "pan": ("FLOAT", {"default": 0.0, "min": -1.0, "max": 1.0, "step": 0.01, "tooltip": "Stereo position. -1.0 is hard left, 1.0 is hard right, 0.0 is center."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "pan"
-    CATEGORY = "AudioTools/Utility"
+    CATEGORY = "⚪Lum3on/AudioTools/Utility"
     def pan(self, audio: dict, pan: float):
         w_batch, sr = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -424,7 +424,7 @@ class DeHum:
                         "q_factor": ("FLOAT", {"default": 10.0, "min": 1.0, "max": 50.0, "step": 0.5, "tooltip": "The narrowness of the filter. A high Q value is needed to target only the hum."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "dehum"
-    CATEGORY = "AudioTools/Processing"
+    CATEGORY = "⚪Lum3on/AudioTools/Processing"
     def dehum(self, audio: dict, hum_freq: str, reduction_db: float, q_factor: float):
         w_batch, sr = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -448,7 +448,7 @@ class NoiseGate:
                         "release_ms": ("FLOAT", {"default": 100.0, "min": 10.0, "max": 1000.0, "step": 1.0, "tooltip": "How quickly (in ms) the gate closes after the signal falls below the threshold."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "gate"
-    CATEGORY = "AudioTools/Processing"
+    CATEGORY = "⚪Lum3on/AudioTools/Processing"
     def gate(self, audio: dict, threshold_db, attack_ms, release_ms):
         w_batch, sr = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -479,7 +479,7 @@ class LoudnessMeter:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("loudness_info",)
     FUNCTION = "measure"
-    CATEGORY = "AudioTools/Analysis"
+    CATEGORY = "⚪Lum3on/AudioTools/Analysis"
     def measure(self, audio: dict):
         w, sr = audio["waveform"][0], audio["sample_rate"]
         audio_np = w.cpu().numpy().T
@@ -497,7 +497,7 @@ class BPMDetector:
     RETURN_TYPES = ("STRING", "FLOAT")
     RETURN_NAMES = ("bpm_info", "beat_events")
     FUNCTION = "detect"
-    CATEGORY = "AudioTools/Analysis"
+    CATEGORY = "⚪Lum3on/AudioTools/Analysis"
     def detect(self, audio: dict, fps: int):
         w, sr = audio["waveform"][0], audio["sample_rate"]
         audio_mono = torch.mean(w, dim=0).cpu().numpy().astype(np.float32)
@@ -522,7 +522,7 @@ class AudioReactiveParameter:
     RETURN_TYPES = ("FLOAT",)
     RETURN_NAMES = ("envelope",)
     FUNCTION = "analyze"
-    CATEGORY = "AudioTools/Analysis"
+    CATEGORY = "⚪Lum3on/AudioTools/Analysis"
     def analyze(self, audio: dict, fps: int, smoothing: float):
         w, sr = audio["waveform"][0], audio["sample_rate"]
         audio_mono = torch.mean(w, dim=0).cpu().numpy()
@@ -546,7 +546,7 @@ class FadeIn:
                         "duration_seconds": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 60.0, "step": 0.1, "tooltip": "The duration of the fade-in effect in seconds."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "fade"
-    CATEGORY = "AudioTools/Effects"
+    CATEGORY = "⚪Lum3on/AudioTools/Effects"
     def fade(self, audio: dict, duration_seconds: float):
         w_batch, sr = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -569,7 +569,7 @@ class FadeOut:
                         "duration_seconds": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 60.0, "step": 0.1, "tooltip": "The duration of the fade-out effect in seconds."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "fade"
-    CATEGORY = "AudioTools/Effects"
+    CATEGORY = "⚪Lum3on/AudioTools/Effects"
     def fade(self, audio: dict, duration_seconds: float):
         w_batch, sr = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -593,7 +593,7 @@ class PadAudio:
                         "pad_end_seconds": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3600.0, "step": 0.1, "tooltip": "Duration of silence to add to the end of the audio."}),}}
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "pad"
-    CATEGORY = "AudioTools/Utility"
+    CATEGORY = "⚪Lum3on/AudioTools/Utility"
     def pad(self, audio: dict, pad_start_seconds: float, pad_end_seconds: float):
         w_batch, sr = audio["waveform"], audio["sample_rate"]
         processed_list = []
@@ -624,7 +624,7 @@ class StandardizeAudio:
     
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "standardize"
-    CATEGORY = "AudioTools/Processing"
+    CATEGORY = "⚪Lum3on/AudioTools/Processing"
 
     def standardize(self, audio: dict, channel_layout: str):
         w_batch, sample_rate = audio["waveform"], audio["sample_rate"]

@@ -27,7 +27,7 @@ class LoadAudioBatch:
     RETURN_TYPES = ("AUDIO", "AUDIO_LIST", "STRING")
     RETURN_NAMES = ("audio_batch", "audio_list", "filenames")
     FUNCTION = "load_batch"
-    CATEGORY = "AudioTools/IO"
+    CATEGORY = "⚪Lum3on/AudioTools/IO"
 
     def load_batch(self, directory_path: str, file_pattern: str, sort_order: str, skip_first: int, load_cap: int):
         if not os.path.isdir(directory_path):
@@ -132,7 +132,7 @@ class GetAudioFromList:
         }
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "get_audio"
-    CATEGORY = "AudioTools/IO"
+    CATEGORY = "⚪Lum3on/AudioTools/IO"
 
     def get_audio(self, audio_list: list, index: int):
         if not audio_list:

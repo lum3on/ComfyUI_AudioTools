@@ -33,7 +33,7 @@ class TextToSpeechNode:
 
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "synthesize"
-    CATEGORY = "AudioTools/Generation"
+    CATEGORY = "⚪Lum3on/AudioTools/Generation"
 
     def synthesize(self, text, voice_index, rate, volume):
         # The engine is already initialized by INPUT_TYPES

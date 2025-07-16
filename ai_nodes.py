@@ -195,7 +195,7 @@ class StemSeparator:
     RETURN_TYPES = ("AUDIO", "AUDIO", "AUDIO", "AUDIO")
     RETURN_NAMES = ("vocals", "bass", "drums", "other")
     FUNCTION = "separate"
-    CATEGORY = "AudioTools/AI"
+    CATEGORY = "⚪Lum3on/AudioTools/AI"
 
     def separate(self, audio: dict, model_name: str):
         get_model, apply_model = import_demucs_modules()
@@ -232,7 +232,7 @@ class SpeechDenoise:
 
     RETURN_TYPES = ("AUDIO",)
     FUNCTION = "denoise"
-    CATEGORY = "AudioTools/AI"
+    CATEGORY = "⚪Lum3on/AudioTools/AI"
 
     def denoise(self, audio: dict, model_name: str):
         get_model, apply_model = import_demucs_modules()
@@ -281,7 +281,7 @@ class SpeechToTextWhisper:
     RETURN_TYPES = ("STRING", "STRING") # Plain text, SRT text
     RETURN_NAMES = ("text", "srt_text")
     FUNCTION = "transcribe"
-    CATEGORY = "AudioTools/AI"
+    CATEGORY = "⚪Lum3on/AudioTools/AI"
 
     def transcribe(self, audio: dict, model_size: str, language: str, task: str, **kwargs): # Added **kwargs
         whisper_lib = import_whisper()
