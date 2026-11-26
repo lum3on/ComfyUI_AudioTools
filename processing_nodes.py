@@ -602,7 +602,7 @@ class PadAudio:
             w_proc = w.clone()
             num_channels, total_samples = w_proc.shape
             if pad_start_seconds > 0:
-                F = int(pad_start_seconds * sr)
+                pad_samples = int(pad_start_seconds * sr)
                 start_padding = torch.zeros((num_channels, pad_samples), device=w_proc.device)
                 w_proc = torch.cat((start_padding, w_proc), dim=1)
             if pad_end_seconds > 0:
